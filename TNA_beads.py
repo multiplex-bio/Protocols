@@ -5,7 +5,7 @@
 
 def get_values(*names):
     import json
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":16,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":5,"settling_time":5,"drying_time":5}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":8,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5}""")
     return [_all_values[n] for n in names]
 
 
@@ -126,7 +126,7 @@ def run(protocol_context):
         pipette.blow_out(liquid_waste)
         pipette.drop_tip()
 
-    # Incubate beads and PCR product at RT for 5 minutes
+    # Incubate beads and PCR product at RT for 15 minutes
     protocol_context.delay(minutes=incubation_time)
 
     # Engagae MagDeck and incubate
