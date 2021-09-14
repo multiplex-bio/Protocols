@@ -5,7 +5,8 @@
 
 def get_values(*names):
     import json
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":8,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5}""")
+    # Here you must change the values to meet your needs 
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":32,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5}""")
     return [_all_values[n] for n in names]
 
 import math
