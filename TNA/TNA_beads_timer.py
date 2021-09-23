@@ -6,7 +6,7 @@
 def get_values(*names):
     import json
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":32,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"left","sample_number":96,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5}""")
     return [_all_values[n] for n in names]
 
 import math
@@ -79,7 +79,7 @@ def run(protocol_context):
     else:
         reagent_container = protocol_context.load_labware(
             'nest_12_reservoir_15ml', '4')
-        liquid_waste = reagent_container.wells()[-1]
+        liquid_waste = reagent_container.wells()[-2] # changed to the 11th position to avoid surpassing the max volume
         col_num = math.ceil(sample_number/8)
         samples = [col for col in mag_plate.rows()[0][:col_num]]
         output = [col for col in output_plate.rows()[0][:col_num]]
@@ -91,6 +91,7 @@ def run(protocol_context):
     ethanol = reagent_container.wells()[1]
     ethanol_salt = reagent_container.wells()[2]
     elution_buffer = reagent_container.wells()[3]
+    ethanol2= reagent_container.wells()[4]
 
     
     # Define bead and mix volume
@@ -190,7 +191,7 @@ def run(protocol_context):
     # Try using same tip for all
     pipette.pick_up_tip()
     for target in samples:
-        pipette.transfer(150, ethanol, target.top(), air_gap=air_vol, new_tip='never')
+        pipette.transfer(150, ethanol2,target.top(), air_gap=air_vol, new_tip='never')
     
     protocol_context.delay(minutes=1)
     # And carefully remove 80% ethanol
