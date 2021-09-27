@@ -2,9 +2,9 @@ from opentrons import protocol_api
 
 # metadata
 metadata = {
-    'protocolName': 'PCR protocol',
+    'protocolName': 'Mixing PCR reagents: 9 samples with. 3 different sets of primers',
     'author': 'Multiplex',
-    'description': 'First iteration. Primers: CVA, ACLSV, CNRMV',
+    'description': '6 samples with. 3 different sets of primers (LChV, ACLSV, CNRMV)',
     'apiLevel': '2.10'
 }
 
