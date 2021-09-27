@@ -1,4 +1,4 @@
-Python scripts to conduct molecular biology protocols using OT-2 Robots by Opentrons
+Python scripts to conduct molecular biology protocols using OT-2 pipetting robots developed by Opentrons
 
 --
 
