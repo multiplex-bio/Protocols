@@ -167,6 +167,7 @@ def run(protocol_context):
     # First wash: 130 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
     pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.dispense = 30
     
     #\ Try using same tip for all
     ####\ Maybe at this point do mixing per tip usage......
@@ -190,13 +191,16 @@ def run(protocol_context):
     pipette.pick_up_tip()
     for target in samples:
         pipette.transfer(130, target, liquid_waste2.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True)
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces
+        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces # || QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste2.top(z=-0.5))
+        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces # || QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste2.top(z=-0.5))
     pipette.drop_tip()
 
     
     # Second wash: 130 uL of Ethanol (70% ethanol)
     ## || All washes and removals are done with the same tip 
+    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.dispense = 30
+    
     pipette.pick_up_tip()
     for target in samples:
         pipette.transfer(130, ethanol, target.top(), air_gap=air_vol, new_tip='never')
@@ -210,13 +214,16 @@ def run(protocol_context):
     ##\changed tips
     for target in samples:
         pipette.transfer(130, target, liquid_waste3.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True)
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces
+        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
+        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
     pipette.drop_tip()
     
     
     # Third wash: 130 uL of Ethanol (70% Ethanol)
     ##\ Try using same tip for all
+    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.dispense = 30
+    
     pipette.pick_up_tip()
     for target in samples:
         pipette.transfer(130, ethanol2, target.top(), air_gap=air_vol, new_tip='never')
@@ -228,12 +235,14 @@ def run(protocol_context):
     
     # Carefully remove 70% ethanol
     ###\ I see ethanol sticking and falling on tip and on plate / reduce air volume? # || I think this was solved
-    pipette.flow_rate.aspirate = 15 # slower aspirate rate than previous steps
+    pipette.flow_rate.aspirate = 15 # aspirate slower than previous steps
+    pipette.flow_rate.dispense = 30
     pipette.well_bottom_clearance.aspirate = 1
+    
     for target in samples:
         pipette.transfer(145, target, liquid_waste4.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True) # This step removes more liquid than what the well actually has
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces
+        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
+        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
         
         #pipette.blow_out() #|| Hay que volver a usarlo en caso de volver a usar dos tomas de aire.
         #pipette.transfer(30, target, liquid_waste4.top(), air_gap=air_vol, new_tip='never') #|| No me parece que sea buena idea hacer que el opentrons pipetee tanto aire
@@ -275,5 +284,6 @@ def run(protocol_context):
     
     # Transfer 50 uL of PCR product to a new well
     pipette.flow_rate.aspirate = 10
+    pipette.flow_rate.dispense = 50
     for target, dest in zip(samples, output):
         pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
