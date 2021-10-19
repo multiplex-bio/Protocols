@@ -8,7 +8,8 @@ Description of folders
 --
 
 PCR: Protocols to prepare the PCR reactions but no the PCR itself
-TNA: Protocols for Total Nucleic Acid extraction with opentrons
+
+TNA: Protocols for Total Nucleic Acid extraction with opentrons.
 
 
 --
