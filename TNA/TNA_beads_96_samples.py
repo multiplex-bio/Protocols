@@ -8,11 +8,13 @@
 
 import math
 import json
+from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":96,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":7,"drying_time":5,"custom_tiprack":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":22,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5,"custom_tiprack":"yes"}""")
     return [_all_values[n] for n in names]
+
 
 p200_TIPRACK_DEF_JSON = """{"ordering":[["A1","B1","C1","D1","E1","F1","G1","H1"],["A2","B2","C2","D2","E2","F2","G2","H2"],["A3","B3","C3","D3","E3","F3","G3","H3"],["A4","B4","C4","D4","E4","F4","G4","H4"],["A5","B5","C5","D5","E5","F5","G5","H5"],["A6","B6","C6","D6","E6","F6","G6","H6"],["A7","B7","C7","D7","E7","F7","G7","H7"],["A8","B8","C8","D8","E8","F8","G8","H8"],["A9","B9","C9","D9","E9","F9","G9","H9"],["A10","B10","C10","D10","E10","F10","G10","H10"],["A11","B11","C11","D11","E11","F11","G11","H11"],["A12","B12","C12","D12","E12","F12","G12","H12"]],"brand":{"brand":"Vertex","brandId":["4227-06"]},"metadata":{"displayName":"Vertex 96 Tip Rack 200 µL","displayCategory":"tipRack","displayVolumeUnits":"µL","tags":[]},"dimensions":{"xDimension":127.75,"yDimension":85.47,"zDimension":60.16},"wells":{"A1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":75.27,"z":9.35},"B1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":65.87,"z":9.35},"C1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":56.47,"z":9.35},"D1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":47.07,"z":9.35},"E1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":37.67,"z":9.35},"F1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":28.27,"z":9.35},"G1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":18.87,"z":9.35},"H1":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":14.85,"y":9.47,"z":9.35},"A2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":75.27,"z":9.35},"B2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":65.87,"z":9.35},"C2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":56.47,"z":9.35},"D2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":47.07,"z":9.35},"E2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":37.67,"z":9.35},"F2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":28.27,"z":9.35},"G2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":18.87,"z":9.35},"H2":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":23.75,"y":9.47,"z":9.35},"A3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":75.27,"z":9.35},"B3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":65.87,"z":9.35},"C3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":56.47,"z":9.35},"D3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":47.07,"z":9.35},"E3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":37.67,"z":9.35},"F3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":28.27,"z":9.35},"G3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":18.87,"z":9.35},"H3":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":32.65,"y":9.47,"z":9.35},"A4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":75.27,"z":9.35},"B4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":65.87,"z":9.35},"C4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":56.47,"z":9.35},"D4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":47.07,"z":9.35},"E4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":37.67,"z":9.35},"F4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":28.27,"z":9.35},"G4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":18.87,"z":9.35},"H4":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":41.55,"y":9.47,"z":9.35},"A5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":75.27,"z":9.35},"B5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":65.87,"z":9.35},"C5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":56.47,"z":9.35},"D5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":47.07,"z":9.35},"E5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":37.67,"z":9.35},"F5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":28.27,"z":9.35},"G5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":18.87,"z":9.35},"H5":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":50.45,"y":9.47,"z":9.35},"A6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":75.27,"z":9.35},"B6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":65.87,"z":9.35},"C6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":56.47,"z":9.35},"D6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":47.07,"z":9.35},"E6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":37.67,"z":9.35},"F6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":28.27,"z":9.35},"G6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":18.87,"z":9.35},"H6":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":59.35,"y":9.47,"z":9.35},"A7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":75.27,"z":9.35},"B7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":65.87,"z":9.35},"C7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":56.47,"z":9.35},"D7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":47.07,"z":9.35},"E7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":37.67,"z":9.35},"F7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":28.27,"z":9.35},"G7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":18.87,"z":9.35},"H7":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":68.25,"y":9.47,"z":9.35},"A8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":75.27,"z":9.35},"B8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":65.87,"z":9.35},"C8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":56.47,"z":9.35},"D8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":47.07,"z":9.35},"E8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":37.67,"z":9.35},"F8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":28.27,"z":9.35},"G8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":18.87,"z":9.35},"H8":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":77.15,"y":9.47,"z":9.35},"A9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":75.27,"z":9.35},"B9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":65.87,"z":9.35},"C9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":56.47,"z":9.35},"D9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":47.07,"z":9.35},"E9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":37.67,"z":9.35},"F9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":28.27,"z":9.35},"G9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":18.87,"z":9.35},"H9":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":86.05,"y":9.47,"z":9.35},"A10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":75.27,"z":9.35},"B10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":65.87,"z":9.35},"C10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":56.47,"z":9.35},"D10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":47.07,"z":9.35},"E10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":37.67,"z":9.35},"F10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":28.27,"z":9.35},"G10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":18.87,"z":9.35},"H10":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":94.95,"y":9.47,"z":9.35},"A11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":75.27,"z":9.35},"B11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":65.87,"z":9.35},"C11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":56.47,"z":9.35},"D11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":47.07,"z":9.35},"E11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":37.67,"z":9.35},"F11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":28.27,"z":9.35},"G11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":18.87,"z":9.35},"H11":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":103.85,"y":9.47,"z":9.35},"A12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":75.27,"z":9.35},"B12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":65.87,"z":9.35},"C12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":56.47,"z":9.35},"D12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":47.07,"z":9.35},"E12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":37.67,"z":9.35},"F12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":28.27,"z":9.35},"G12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":18.87,"z":9.35},"H12":{"depth":50.81,"totalLiquidVolume":200,"shape":"circular","diameter":5.77,"x":112.75,"y":9.47,"z":9.35}},"groups":[{"metadata":{},"wells":["A1","B1","C1","D1","E1","F1","G1","H1","A2","B2","C2","D2","E2","F2","G2","H2","A3","B3","C3","D3","E3","F3","G3","H3","A4","B4","C4","D4","E4","F4","G4","H4","A5","B5","C5","D5","E5","F5","G5","H5","A6","B6","C6","D6","E6","F6","G6","H6","A7","B7","C7","D7","E7","F7","G7","H7","A8","B8","C8","D8","E8","F8","G8","H8","A9","B9","C9","D9","E9","F9","G9","H9","A10","B10","C10","D10","E10","F10","G10","H10","A11","B11","C11","D11","E11","F11","G11","H11","A12","B12","C12","D12","E12","F12","G12","H12"]}],"parameters":{"format":"irregular","quirks":[],"isTiprack":true,"tipLength":50.81,"isMagneticModuleCompatible":false,"loadName":"vertex_96_tiprack_200ul"},"namespace":"custom_beta","version":1,"schemaVersion":2,"cornerOffsetFromSlot":{"x":0,"y":0,"z":0}}"""
 Custom_Tiprack_DEF = json.loads(p200_TIPRACK_DEF_JSON)
@@ -127,7 +129,7 @@ def run(protocol_context):
         
     ## Defining default values for pipetting behavior 
     # Mix beads and PCR samples
-    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 300
     pipette.well_bottom_clearance.aspirate = 1
     pipette.well_bottom_clearance.dispense = 5
@@ -142,7 +144,7 @@ def run(protocol_context):
         pipette.mix(10, 50, beads)
         pipette.transfer(bead_volume, beads, target, new_tip='never')
         pipette.mix(20, 50, target)
-        #pipette.blow_out(liquid_waste1) #|| Se eliminó este paso para evitar contaminación cruzada
+        pipette.air_gap(air_vol)
         pipette.drop_tip()
 
     # Incubate sample with beads at RT for 15 minutes
@@ -152,34 +154,60 @@ def run(protocol_context):
     # Engagae MagDeck and incubate
     mag_deck.engage(height=10)
         
-    # Incubation time with iman for 7 mins
+    # Incubation time with iman for 5 mins
     for i in range(settling_time):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, settling_time))
         
     # Remove supernatant (total_vol = 50 uL from sample + 50 uL from beads + 5 extra uL) from magnetic beads 
-    pipette.flow_rate.aspirate = 10
-    pipette.flow_rate.dispense = 150
+    pipette.flow_rate.aspirate = 30
+    pipette.flow_rate.dispense = 30
     
-    for target in samples: 
-        pipette.transfer(total_vol, target, liquid_waste1.top(), air_gap=air_vol, blow_out=True)
-
+    
+    # Hay que agregar que choque con las paredes del reservoir liquid_waste1.top()
+    for target in samples:
+        pipette.aspirate(total_vol, target)
+        pipette.air_gap(air_vol)
+        pipette.dispense(total_vol, liquid_waste1.top())
+        pipette.flow_rate.blow_out = 15
+        pipette.blow_out(liquid_waste1.top(z=-1))
+        wall_location = (liquid_waste1.length/2)
+        pipette.move_to(liquid_waste1.top().move(types.Point(x=wall_location, y=0, z=-1)))
+        pipette.move_to(liquid_waste1.top().move(types.Point(x=-wall_location, y=0, z=-1)))
+                
         
     # First wash: 130 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
-    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 30
     
     #\ Try using same tip for all
-    ####\ Maybe at this point do mixing per tip usage......
+    #### \ Maybe at this point do mixing per tip usage......
     mag_deck.disengage()
     for target in samples:
+        # Slowly aspirate the ethanol salt
         pipette.pick_up_tip()
-        pipette.transfer(130, ethanol_salt, target.top(), air_gap=air_vol, new_tip='never')
-        pipette.mix(10, 75, target)
+        pipette.aspirate(130, ethanol_salt)
+        protocol_context.delay(seconds=1)
+        pipette.move_to(ethanol_salt.top(), speed = 20)
+        pipette.air_gap(air_vol)
+        
+        # Slowly dispense the ethanol salt
+        #|| This instructions will allow the pipette to move towards well's wall so it can dispense liquids with high adhesion with its help
+        #center_location = target.center()
+        #wall_location= target.diameter()/2
+        #adjusted_location=center_location.move(types.Point(x=wall_location, y=0, z=0))
+        #pipette.move_to(adjusted_location)
+        
+        pipette.move_to(target.top())
+        pipette.dispense(pipette.current_volume)
+        protocol_context.delay(seconds=1)
+        pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5)
+        pipette.touch_tip(target, v_offset = -0.5, speed = 50)
+        
         pipette.drop_tip()
-
+       
+    
     mag_deck.engage(height=10)
     
     # Incubation with Ethanol salt and the iman for 5 minutes
@@ -190,64 +218,122 @@ def run(protocol_context):
     ## || All removals are done with the same tip 
     pipette.pick_up_tip()
     for target in samples:
-        pipette.transfer(130, target, liquid_waste2.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True)
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces # || QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste2.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces # || QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste2.top(z=-0.5))
-    pipette.drop_tip()
-
+        pipette.aspirate(130, target)
+        pipette.move_to(target.top(), speed=20)
+        pipette.air_gap(air_vol)
+        pipette.dispense(pipette.current_volume, liquid_waste2.top()) # || It could be a good idea to dispense on the wall of the well
+        pipette.flow_rate.blow_out = 15
+        pipette.blow_out(liquid_waste2.top(z=-0.5))
+        #pipette.touch_tip(liquid_waste2.top(z=-0.5))
+        wall_location = (liquid_waste2.length/2)
+        pipette.move_to(liquid_waste2.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
+        pipette.move_to(liquid_waste2.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
+    pipette.drop_tip()    
+        
+    
+    
     
     # Second wash: 130 uL of Ethanol (70% ethanol)
     ## || All washes and removals are done with the same tip 
-    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 30
     
+
     pipette.pick_up_tip()
     for target in samples:
-        pipette.transfer(130, ethanol, target.top(), air_gap=air_vol, new_tip='never')
+        # Slowly aspirate the ethanol
+        pipette.aspirate(130, ethanol)
+        protocol_context.delay(seconds=1)
+        pipette.move_to(ethanol.top(), speed = 20)
+        pipette.air_gap(air_vol)
+        
+        # Slowly dispense the ethanol
+        #center_location = target.center()
+        #wall_location= target.diameter()/2
+        #adjusted_location=center_location.move(types.Point(x=wall_location, y=0, z=0))
+        #pipette.move_to(adjusted_location)
+        
+        pipette.move_to(target.top())
+        pipette.dispense(pipette.current_volume)
+        protocol_context.delay(seconds=1)
+        pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5)
+        pipette.touch_tip(target, v_offset = -0.5, speed = 50)
+        
 
     # Incubation with Ethanol 70% for 1 minute
     protocol_context.delay(minutes=1)
 
+    
     # Remove second wash (70% ethanol)
     ##\changed tips
+    
     for target in samples:
-        pipette.transfer(130, target, liquid_waste3.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True)
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
-    pipette.drop_tip()
+        pipette.aspirate(130, target)
+        pipette.move_to(target.top(), speed=20)
+        pipette.air_gap(air_vol)
+        pipette.dispense(pipette.current_volume, liquid_waste3.top()) # || It could be a good idea to dispense on the wall of the well
+        pipette.flow_rate.blow_out = 15
+        pipette.blow_out(liquid_waste3.top(z=-0.5))
+        #pipette.touch_tip(liquid_waste3.top(z=-0.5))
+        wall_location = (liquid_waste3.length/2)
+        pipette.move_to(liquid_waste3.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
+        pipette.move_to(liquid_waste3.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
+    pipette.drop_tip() 
+    
+    
     
     
     # Third wash: 130 uL of Ethanol (70% Ethanol)
     ##\ Try using same tip for all
-    pipette.flow_rate.aspirate = 25
+    pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 30
     
     pipette.pick_up_tip()
     for target in samples:
-        pipette.transfer(130, ethanol2, target.top(), air_gap=air_vol, new_tip='never')
+    # Slowly aspirate the ethanol
+        pipette.aspirate(130, ethanol2)
+        protocol_context.delay(seconds=1)
+        pipette.move_to(ethanol2.top(), speed = 20)
+        pipette.flow_rate.aspirate=25
+        pipette.air_gap(air_vol)
+        
+        # Slowly dispense the ethanol
+        #center_location = target.center()
+        #wall_location= target.diameter()/2
+        #adjusted_location=center_location.move(types.Point(x=wall_location, y=0, z=0))
+        #pipette.move_to(adjusted_location)
+        
+        pipette.move_to(target.top())
+        pipette.dispense(pipette.current_volume)
+        protocol_context.delay(seconds=1)
+        pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5)
+        pipette.touch_tip(target, v_offset = -0.5, speed = 50)
+
     
     # Incubation with Ethanol 70% for 1 minute
-    protocol_context.delay(minutes=1)
+    protocol_context.delay(minutes=1)    
+    
     
     # Carefully remove 70% ethanol
     ###\ I see ethanol sticking and falling on tip and on plate / reduce air volume? # || I think this was solved
-    pipette.flow_rate.aspirate = 15 # aspirate slower than previous steps
+    pipette.flow_rate.aspirate = 20 # aspirate slower than previous steps
     pipette.flow_rate.dispense = 30
     pipette.well_bottom_clearance.aspirate = 1
     
     for target in samples:
-        pipette.transfer(145, target, liquid_waste4.top(), air_gap=air_vol, new_tip='never', blow_out = True, touch_tip=True) # This step removes more liquid than what the well actually has
-        pipette.blow_out(target.top(z=-0.5)) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5) # ||Quizás eliminarlo para no hacer esto 2 veces #|| QUIZÁS CAMBIAR ESTA LÍNEA POR UN pipette.blow_out(liquid_waste3.top(z=-0.5))
-        
-        #pipette.blow_out() #|| Hay que volver a usarlo en caso de volver a usar dos tomas de aire.
-        #pipette.transfer(30, target, liquid_waste4.top(), air_gap=air_vol, new_tip='never') #|| No me parece que sea buena idea hacer que el opentrons pipetee tanto aire
-        #pipette.blow_out() #|| No me parece que sea buena idea hacer que el opentrons pipetee tanto aire
-    pipette.drop_tip()
+        pipette.aspirate(130, target)
+        pipette.move_to(target.top(), speed=20)
+        pipette.air_gap(air_vol)
+        pipette.dispense(pipette.current_volume, liquid_waste4.top()) # || It could be a good idea to dispense on the wall of the well
+        pipette.flow_rate.blow_out = 15
+        pipette.blow_out(liquid_waste4.top(z=-0.5))
+        #pipette.touch_tip(liquid_waste4.top(z=-0.5))
+        wall_location = (liquid_waste4.length/2)
+        pipette.move_to(liquid_waste4.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
+        pipette.move_to(liquid_waste4.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
+    pipette.drop_tip() 
 
     
     # Dry at RT for 5 minutes 
@@ -258,15 +344,16 @@ def run(protocol_context):
     mag_deck.disengage()
 
     
+    
     # Elution with 55 uL of elution buffer (ultra pure H2O) and then apply a strong mix
-    pipette.flow_rate.aspirate = 50
+    pipette.flow_rate.aspirate = 100
     pipette.flow_rate.dispense = 300
     for target in samples:
         pipette.pick_up_tip()
         pipette.transfer(elution_buffer_volume+5, elution_buffer, target, new_tip='never')
         pipette.mix(20, mix_vol, target)
         pipette.blow_out(target.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5)
+        pipette.touch_tip(target, v_offset=-0.5, speed = 50)
         pipette.drop_tip()
 
         
@@ -283,7 +370,7 @@ def run(protocol_context):
     
     
     # Transfer 50 uL of PCR product to a new well
-    pipette.flow_rate.aspirate = 10
+    pipette.flow_rate.aspirate = 50
     pipette.flow_rate.dispense = 50
     for target, dest in zip(samples, output):
         pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
