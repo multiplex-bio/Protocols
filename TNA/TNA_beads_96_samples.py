@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":32,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":5,"drying_time":5,"custom_tiprack":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":24,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"no"}""")
     return [_all_values[n] for n in names]
 
 
@@ -173,7 +173,10 @@ def run(protocol_context):
         pipette.move_to(liquid_waste1.top().move(types.Point(x=wall_location, y=0, z=-1)))
         pipette.move_to(liquid_waste1.top().move(types.Point(x=-wall_location, y=0, z=-1)))
         pipette.drop_tip()            
-        
+    
+    
+    
+    
     # First wash: 130 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
     pipette.flow_rate.aspirate = 25
@@ -190,7 +193,6 @@ def run(protocol_context):
         pipette.move_to(ethanol_salt.top(), speed = 20)
         pipette.air_gap(air_vol)
         
-        # Slowly dispense the ethanol salt
         
         #|| This instructions will allow the pipette to move towards well's wall so it can dispense liquids with high adhesion with its help
         #center_location = target.center()
@@ -199,6 +201,7 @@ def run(protocol_context):
         #pipette.move_to(adjusted_location)
         
         pipette.dispense(pipette.current_volume, target.top())
+        pipette.flow_rate.dispense = 150
         pipette.mix(10, 75, target)
         pipette.move_to(target.top(), speed=20)
         protocol_context.delay(seconds=1)
@@ -215,6 +218,7 @@ def run(protocol_context):
     for i in range(5):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, 5))
 
+        
     # Remove first wash (70% ethanol NaCl 5 M) 
     ## || All removals are done with the same tip 
     pipette.pick_up_tip()
@@ -222,6 +226,7 @@ def run(protocol_context):
         pipette.aspirate(130, target)
         pipette.move_to(target.top(), speed=20)
         pipette.air_gap(air_vol)
+        pipette.flow_rate.dispense = 30
         pipette.dispense(pipette.current_volume, liquid_waste2.top()) # || It could be a good idea to dispense on the wall of the well
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(liquid_waste2.top(z=-0.5))
@@ -231,6 +236,7 @@ def run(protocol_context):
         pipette.move_to(liquid_waste2.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
     pipette.drop_tip()    
         
+    
     
     
     
@@ -268,7 +274,6 @@ def run(protocol_context):
 
     
     # Remove second wash (70% ethanol)
-    
     for target in samples:
         pipette.aspirate(130, target)
         pipette.move_to(target.top(), speed=20)
@@ -281,6 +286,7 @@ def run(protocol_context):
         pipette.move_to(liquid_waste3.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
         pipette.move_to(liquid_waste3.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
     pipette.drop_tip() 
+    
     
     
     
@@ -347,6 +353,8 @@ def run(protocol_context):
     # Disengage MagDeck
     mag_deck.disengage()
 
+    
+    
     
     
     # Elution with 55 uL of elution buffer (ultra pure H2O) and then apply a strong mix
