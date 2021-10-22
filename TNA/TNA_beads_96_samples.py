@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":22,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":15,"settling_time":5,"drying_time":5,"custom_tiprack":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":32,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":5,"drying_time":5,"custom_tiprack":"yes"}""")
     return [_all_values[n] for n in names]
 
 
@@ -83,16 +83,16 @@ def run(protocol_context):
             reagent_container = protocol_context.load_labware(
                 'opentrons_24_tuberack_nest_2ml_snapcap', '4')
             liquid_waste = protocol_context.load_labware(
-                'nest_12_reservoir_15ml', '5').wells()[-1]
+                'usascientific_12_reservoir_22ml', '5').wells()[-1]
         else:
             reagent_container = protocol_context.load_labware(
-                'nest_12_reservoir_15ml', '4')
+                'usascientific_12_reservoir_22ml', '4')
             liquid_waste = reagent_container.wells()[-1]
         samples = [well for well in mag_plate.wells()[:sample_number]]
         output = [well for well in output_plate.wells()[:sample_number]]
     else:
         reagent_container = protocol_context.load_labware(
-            'nest_12_reservoir_15ml', '4')
+            'usascientific_12_reservoir_22ml', '4')
         # Many liquid waste wells due to the great amount of liquid used on each wash
         liquid_waste1 = reagent_container.wells()[-1] 
         liquid_waste2 = reagent_container.wells()[-2]
@@ -131,7 +131,7 @@ def run(protocol_context):
     # Mix beads and PCR samples
     pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 300
-    pipette.well_bottom_clearance.aspirate = 1
+    pipette.well_bottom_clearance.aspirate = 1.5
     pipette.well_bottom_clearance.dispense = 5
     air_vol = pipette.max_volume * 0.1
     
@@ -144,10 +144,10 @@ def run(protocol_context):
         pipette.mix(10, 50, beads)
         pipette.transfer(bead_volume, beads, target, new_tip='never')
         pipette.mix(20, 50, target)
-        pipette.air_gap(air_vol)
+        pipette.air_gap(air_vol) # || Para evitar derramar líquido sobre el deck o labware
         pipette.drop_tip()
 
-    # Incubate sample with beads at RT for 15 minutes
+    # Incubate sample with beads at RT for 7 minutes
     for i in range(incubation_time):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, incubation_time))
 
@@ -158,13 +158,12 @@ def run(protocol_context):
     for i in range(settling_time):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, settling_time))
         
-    # Remove supernatant (total_vol = 50 uL from sample + 50 uL from beads + 5 extra uL) from magnetic beads 
-    pipette.flow_rate.aspirate = 30
-    pipette.flow_rate.dispense = 30
+    # Remove supernatant from magnetic beads (total_vol = 50 uL from sample + 50 uL from beads + 5 extra uL)
+    pipette.flow_rate.aspirate = 10
+    pipette.flow_rate.dispense = 150
     
-    
-    # Hay que agregar que choque con las paredes del reservoir liquid_waste1.top()
     for target in samples:
+        pipette.pick_up_tip()
         pipette.aspirate(total_vol, target)
         pipette.air_gap(air_vol)
         pipette.dispense(total_vol, liquid_waste1.top())
@@ -173,11 +172,11 @@ def run(protocol_context):
         wall_location = (liquid_waste1.length/2)
         pipette.move_to(liquid_waste1.top().move(types.Point(x=wall_location, y=0, z=-1)))
         pipette.move_to(liquid_waste1.top().move(types.Point(x=-wall_location, y=0, z=-1)))
-                
+        pipette.drop_tip()            
         
     # First wash: 130 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
-    pipette.flow_rate.aspirate = 30
+    pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 30
     
     #\ Try using same tip for all
@@ -192,14 +191,16 @@ def run(protocol_context):
         pipette.air_gap(air_vol)
         
         # Slowly dispense the ethanol salt
+        
         #|| This instructions will allow the pipette to move towards well's wall so it can dispense liquids with high adhesion with its help
         #center_location = target.center()
         #wall_location= target.diameter()/2
         #adjusted_location=center_location.move(types.Point(x=wall_location, y=0, z=0))
         #pipette.move_to(adjusted_location)
         
-        pipette.move_to(target.top())
-        pipette.dispense(pipette.current_volume)
+        pipette.dispense(pipette.current_volume, target.top())
+        pipette.mix(10, 75, target)
+        pipette.move_to(target.top(), speed=20)
         protocol_context.delay(seconds=1)
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
@@ -224,7 +225,7 @@ def run(protocol_context):
         pipette.dispense(pipette.current_volume, liquid_waste2.top()) # || It could be a good idea to dispense on the wall of the well
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(liquid_waste2.top(z=-0.5))
-        #pipette.touch_tip(liquid_waste2.top(z=-0.5))
+        # my_own_touch_tips:
         wall_location = (liquid_waste2.length/2)
         pipette.move_to(liquid_waste2.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
         pipette.move_to(liquid_waste2.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
@@ -235,7 +236,7 @@ def run(protocol_context):
     
     # Second wash: 130 uL of Ethanol (70% ethanol)
     ## || All washes and removals are done with the same tip 
-    pipette.flow_rate.aspirate = 30
+    pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 30
     
 
@@ -259,6 +260,7 @@ def run(protocol_context):
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
         pipette.touch_tip(target, v_offset = -0.5, speed = 50)
+        pipette.move_to(target.top())
         
 
     # Incubation with Ethanol 70% for 1 minute
@@ -266,7 +268,6 @@ def run(protocol_context):
 
     
     # Remove second wash (70% ethanol)
-    ##\changed tips
     
     for target in samples:
         pipette.aspirate(130, target)
@@ -275,7 +276,7 @@ def run(protocol_context):
         pipette.dispense(pipette.current_volume, liquid_waste3.top()) # || It could be a good idea to dispense on the wall of the well
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(liquid_waste3.top(z=-0.5))
-        #pipette.touch_tip(liquid_waste3.top(z=-0.5))
+        # my_own_touch_tips
         wall_location = (liquid_waste3.length/2)
         pipette.move_to(liquid_waste3.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
         pipette.move_to(liquid_waste3.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
@@ -286,7 +287,7 @@ def run(protocol_context):
     
     # Third wash: 130 uL of Ethanol (70% Ethanol)
     ##\ Try using same tip for all
-    pipette.flow_rate.aspirate = 30
+    pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 30
     
     pipette.pick_up_tip()
@@ -295,7 +296,6 @@ def run(protocol_context):
         pipette.aspirate(130, ethanol2)
         protocol_context.delay(seconds=1)
         pipette.move_to(ethanol2.top(), speed = 20)
-        pipette.flow_rate.aspirate=25
         pipette.air_gap(air_vol)
         
         # Slowly dispense the ethanol
@@ -310,6 +310,7 @@ def run(protocol_context):
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(target.top(z=-0.5))
         pipette.touch_tip(target, v_offset = -0.5, speed = 50)
+        pipette.move_to(target.top())
 
     
     # Incubation with Ethanol 70% for 1 minute
@@ -318,12 +319,12 @@ def run(protocol_context):
     
     # Carefully remove 70% ethanol
     ###\ I see ethanol sticking and falling on tip and on plate / reduce air volume? # || I think this was solved
-    pipette.flow_rate.aspirate = 20 # aspirate slower than previous steps
+    pipette.flow_rate.aspirate = 15 # aspirate slower than previous steps
     pipette.flow_rate.dispense = 30
     pipette.well_bottom_clearance.aspirate = 1
     
     for target in samples:
-        pipette.aspirate(130, target)
+        pipette.aspirate(150, target)
         pipette.move_to(target.top(), speed=20)
         pipette.air_gap(air_vol)
         pipette.dispense(pipette.current_volume, liquid_waste4.top()) # || It could be a good idea to dispense on the wall of the well
@@ -333,6 +334,9 @@ def run(protocol_context):
         wall_location = (liquid_waste4.length/2)
         pipette.move_to(liquid_waste4.top().move(types.Point(x=wall_location, y=0, z=-0.5)))
         pipette.move_to(liquid_waste4.top().move(types.Point(x=-wall_location, y=0, z=-0.5)))
+        
+        # || Quizás agregar otro paso de sacar unos 30uL desde target hasta el liquid waste 4
+        
     pipette.drop_tip() 
 
     
@@ -346,18 +350,17 @@ def run(protocol_context):
     
     
     # Elution with 55 uL of elution buffer (ultra pure H2O) and then apply a strong mix
-    pipette.flow_rate.aspirate = 100
+    pipette.flow_rate.aspirate = 50
     pipette.flow_rate.dispense = 300
     for target in samples:
         pipette.pick_up_tip()
         pipette.transfer(elution_buffer_volume+5, elution_buffer, target, new_tip='never')
         pipette.mix(20, mix_vol, target)
-        pipette.blow_out(target.top(z=-0.5))
-        pipette.touch_tip(target, v_offset=-0.5, speed = 50)
+        pipette.blow_out(target.top(z=-1))
         pipette.drop_tip()
 
         
-    # Incubation at RT for 1 minute    
+    # Incubation at RT for 5 minutes   
     for i in range(5):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, 5))
 
@@ -370,7 +373,7 @@ def run(protocol_context):
     
     
     # Transfer 50 uL of PCR product to a new well
-    pipette.flow_rate.aspirate = 50
-    pipette.flow_rate.dispense = 50
+    pipette.flow_rate.aspirate = 10
+    pipette.well_bottom_clearance.aspirate = 1.5
     for target, dest in zip(samples, output):
         pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
