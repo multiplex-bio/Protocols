@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":24,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"no"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":16,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"no"}""")
     return [_all_values[n] for n in names]
 
 
@@ -131,7 +131,7 @@ def run(protocol_context):
     # Mix beads and PCR samples
     pipette.flow_rate.aspirate = 30
     pipette.flow_rate.dispense = 300
-    pipette.well_bottom_clearance.aspirate = 1.5
+    pipette.well_bottom_clearance.aspirate = 1
     pipette.well_bottom_clearance.dispense = 5
     air_vol = pipette.max_volume * 0.1
     
@@ -186,7 +186,9 @@ def run(protocol_context):
     #### \ Maybe at this point do mixing per tip usage......
     mag_deck.disengage()
     for target in samples:
-        # Slowly aspirate the ethanol salt
+        # Slowly aspiration of the ethanol salt for a correct pipetting
+        pipette.flow_rate.aspirate = 25
+        pipette.flow_rate.dispense = 30
         pipette.pick_up_tip()
         pipette.aspirate(130, ethanol_salt)
         protocol_context.delay(seconds=1)
@@ -200,9 +202,11 @@ def run(protocol_context):
         #adjusted_location=center_location.move(types.Point(x=wall_location, y=0, z=0))
         #pipette.move_to(adjusted_location)
         
-        pipette.dispense(pipette.current_volume, target.top())
+        # Rapid mix to allow disgregation of the beads
+        pipette.flow_rate.aspirate = 150
         pipette.flow_rate.dispense = 150
-        pipette.mix(10, 75, target)
+        pipette.dispense(pipette.current_volume, target.top())
+        pipette.mix(20, 100, target)
         pipette.move_to(target.top(), speed=20)
         protocol_context.delay(seconds=1)
         pipette.flow_rate.blow_out = 15
@@ -243,7 +247,7 @@ def run(protocol_context):
     # Second wash: 130 uL of Ethanol (70% ethanol)
     ## || All washes and removals are done with the same tip 
     pipette.flow_rate.aspirate = 25
-    pipette.flow_rate.dispense = 30
+    pipette.flow_rate.dispense = 150
     
 
     pipette.pick_up_tip()
@@ -278,6 +282,7 @@ def run(protocol_context):
         pipette.aspirate(130, target)
         pipette.move_to(target.top(), speed=20)
         pipette.air_gap(air_vol)
+        # pipette.flow_rate.dispense = 30
         pipette.dispense(pipette.current_volume, liquid_waste3.top()) # || It could be a good idea to dispense on the wall of the well
         pipette.flow_rate.blow_out = 15
         pipette.blow_out(liquid_waste3.top(z=-0.5))
@@ -294,7 +299,7 @@ def run(protocol_context):
     # Third wash: 130 uL of Ethanol (70% Ethanol)
     ##\ Try using same tip for all
     pipette.flow_rate.aspirate = 25
-    pipette.flow_rate.dispense = 30
+    pipette.flow_rate.dispense = 150
     
     pipette.pick_up_tip()
     for target in samples:
