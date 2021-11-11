@@ -129,6 +129,7 @@ def run(protocol):
     for output_sample in output_samples:
         s300.transfer(volumen_mastermix,
                      master_mix,
-                     output_sample)
+                     output_sample,
+                     blow_out = True)
         
     
