@@ -21,6 +21,14 @@ vol_total_etanol_sal = (130 * sample_number * 1)/1000 # uL usados para lavar cad
 vol_total_elution_buffer = (50 * sample_number * 1)/1000 # uL usados para lavar cada muestra * Cantidad de muestras * Cantidad de lavados para cada muestra / 1000 para tener el volumen en mL
 vol_total_descarte = vol_total_beads + vol_total_etanol + vol_total_etanol_sal + vol_total_elution_buffer
 
+list_of_vols = [vol_total_beads,
+               vol_total_etanol,
+               vol_total_etanol_sal,
+               vol_total_elution_buffer]
+
+for vol in list_of_vols:
+    if vol < 3:
+        list_of_vols[vol] = 3
 
 # Calculamos cuantos wells de descarte van a ser necesarios
 wells_descarte = 4 # Uno para cada una de los siguientes desechos: Beads, Etanol + Sal, Etanol (1er lavado) y Etanol (2do lavado)
