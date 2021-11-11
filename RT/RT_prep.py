@@ -12,8 +12,8 @@ metadata = {
 
 
 def get_values(*names):
-    # Aun no se puede usar custom tiprack
-    _all_values = json.loads("""{"sample_number":20,"custom_tiprack":"no", "custom_output_plate":"no"}""")
+    # los valores para que las variables custom_* funcione son "yes" o "no"
+    _all_values = json.loads("""{"sample_number":96,"custom_tiprack":"no", "custom_output_plate":"no"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -26,13 +26,15 @@ def run(protocol):
     
     
     # TIPS
+    slots = ['6','9']
+    
     if custom_tiprack == 'yes':
-        big_tiprack = [protocol.load_labware('vertex_96_tiprack_200ul', 6, 'big tips tiprack')]
+        big_tiprack = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'big tips tiprack') for slot in slots]
     else:
-        big_tiprack = [protocol.load_labware('opentrons_96_tiprack_300ul', 6, 'big tips tiprack')]
+        big_tiprack = [protocol.load_labware('opentrons_96_tiprack_300ul', slot, 'big tips tiprack') for slot in slots]
     
     
-    small_tiprack = [protocol.load_labware('opentrons_96_tiprack_20ul', 4, 'smal tips tiprack')]
+    small_tiprack = [protocol.load_labware('opentrons_96_tiprack_20ul', 4, 'small tips tiprack')]
     
     
     
@@ -53,22 +55,17 @@ def run(protocol):
     o_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 2, 'output plate') # The adapter makes it the same size as the biorad wellplate
     
     
-    # Mastermix
-    #mastermix_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 3, 'master mix rack')
-    
-    # Primer plates (custom eppendorfs rack)
-    #primerh20_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 5, 'Primers+H2O rack')
-    
+    # Rack with reagents (eppendorf tubes)
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 3, 'eppendorf rack')
     
     master_mix = eppendorf_rack.wells()[0]
-    primer_h20 = eppendorf_rack.wells()[-1]
+    primer_h2o = eppendorf_rack.wells()[-1]
     
     
     
     # INSTRUMENTS
-    m20 = protocol.load_instrument('p20_multi_gen2', 'left', tip_racks = small_tiprack)
-    s300 = protocol.load_instrument('p300_single_gen2', 'right', tip_racks = big_tiprack)
+    m20 = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks = small_tiprack)
+    s300 = protocol.load_instrument('p300_single_gen2', 'left', tip_racks = big_tiprack)
     
     
     
@@ -76,22 +73,18 @@ def run(protocol):
     
     # RT - PASO 1: Primers + H20
     vol_primers_h2o = sample_number*3 # Se necesitan 3 uL por muestra a procesar, por lo que se deben cargar originalmente un poco más de estos reactivos
-    disposal_volume = vol_primers_h2o*0.15
+    #disposal_volume = vol_primers_h2o*0.15
     
     s300.distribute(3,
-                    master_mix, # From
+                    primer_h2o, # From
                     [o_plate.wells()[:sample_number]], #To
                     mix_before = (5, vol_primers_h2o - 2), # Mixing vol_primers_h2o 5 times
                     blow_out = True,
-                    carryover = False,
-                    disposal_volume = disposal_volume
+                    blowout_location = 'source well',
+                    carryover = False # Split volumes when vol > pipette.max_volume
+                    #disposal_volume = disposal_volume
                    )
     
-    
-    
-    # Incubación (Pausing the protocol)
-    protocol.comment("Incubar por X minutos")
-    protocol.pause("Coloca el output plate en el sitio 2 y presiona 'Continuar' para seguir con el resto del protocolo")
     
     
     
@@ -121,7 +114,15 @@ def run(protocol):
     
     
     
-    # RT - PASO 3: Master Mix
+    
+    # RT - PASO 3: Incubación (Pausing the protocol)
+    protocol.comment("Incubar por 5 minutos minutos a 65°C")
+    protocol.pause("Terminada la incubación, coloca el output plate en el sitio 2 y presiona 'Continuar' para seguir con el resto del protocolo")
+    
+    
+    
+    
+    # RT - PASO 4: Master Mix
     output_samples = o_plate.wells()[:sample_number]
     volumen_mastermix = 5 #uL
     
