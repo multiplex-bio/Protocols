@@ -130,6 +130,7 @@ def run(protocol):
         s300.transfer(volumen_mastermix,
                      master_mix,
                      output_sample,
-                     blow_out = True)
+                     blow_out = True,
+                     blowout_location = 'destination well')
         
     
