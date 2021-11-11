@@ -19,30 +19,28 @@ vol_total_beads = (50 * sample_number * 1)/1000 # uL usados para cada muestra * 
 vol_total_etanol = (130 * sample_number * 2)/1000 # uL usados para lavar cada muestra * Cantidad de muestras * Cantidad de lavados para cada muestra / 1000 para tener el volumen en mL
 vol_total_etanol_sal = (130 * sample_number * 1)/1000 # uL usados para lavar cada muestra * Cantidad de muestras * Cantidad de lavados para cada muestra / 1000 para tener el volumen en mL
 vol_total_elution_buffer = (50 * sample_number * 1)/1000 # uL usados para lavar cada muestra * Cantidad de muestras * Cantidad de lavados para cada muestra / 1000 para tener el volumen en mL
-vol_total_descarte = vol_total_beads + vol_total_etanol + vol_total_etanol_sal + vol_total_elution_buffer
 
 list_of_vols = [vol_total_beads,
                vol_total_etanol,
                vol_total_etanol_sal,
                vol_total_elution_buffer]
 
-for vol in list_of_vols:
-    if vol < 3:
-        list_of_vols[vol] = 3
-
-# Calculamos cuantos wells de descarte van a ser necesarios
-wells_descarte = 4 # Uno para cada una de los siguientes desechos: Beads, Etanol + Sal, Etanol (1er lavado) y Etanol (2do lavado)
+# If the volume needed is lower than 3 mL, it is converted to 3 mL instead
+list_of_vols = [3 if vol < 3 else vol for vol in list_of_vols]
 
 
 # Output del script. Indica cuanto de cada reactivo se va a usar y donde debe ser cargado
 print('\n\nPara llevar a cabo el protocolo ... \n')
 
-print("Usarás {} mL de beads en la posición 'A1' del reservoir\n".format(vol_total_beads+1)) #+1 porque se vio experimentalmente que son necesarios para mejorar la precision del pipeteo
+print("Usarás {} mL de beads en la posición 'A1' del reservoir\n".format(list_of_vols[0]+1)) #+1 porque se vio experimentalmente que son necesarios para mejorar la precision del pipeteo
 
-print("Usarás {} mL de etanol en las posiciones 'A2' y 'A3' del reservoir\n".format(vol_total_etanol/2))
+if list_of_vols[1] >= 6:
+    print("Usarás {} mL de etanol en las posiciones 'A2' y 'A3' del reservoir\n".format(list_of_vols[1]/2))
+else:
+    print("Usarás {} mL de etanol en las posiciones 'A2' y 'A3' del reservoir\n".format(list_of_vols[1]))
 
-print("Usarás {} mL de etanol sal en la posición 'A4'\n".format(vol_total_etanol_sal))
+print("Usarás {} mL de etanol sal en la posición 'A4'\n".format(list_of_vols[2]))
 
-print("Usarás {} mL de agua ultra pura en la posición 'A5'\n".format(vol_total_elution_buffer))
+print("Usarás {} mL de agua ultra pura en la posición 'A5'\n".format(list_of_vols[3]))
 
-print("Usarás {} mL de descarte. Tienes que dejar disponibles {} wells,".format(vol_total_descarte, wells_descarte) + " desde el 'A12' hasta el 'A" + str(12-wells_descarte) + "'\n")
+print("Tienes que dejar disponibles 4 wells para el descarte")
