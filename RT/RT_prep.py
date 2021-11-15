@@ -13,15 +13,15 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8,"custom_tiprack":"no", "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"sample_number":8,"custom_tipracks":"yes", "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
     
     [sample_number,
-     custom_tiprack, custom_sample_plate ,custom_output_plate] = get_values(
+     custom_tipracks, custom_sample_plate, custom_output_plate] = get_values(
         "sample_number",
-        "custom_tiprack", "custom_sample_plate", "custom_output_plate"
+        "custom_tipracks", "custom_sample_plate", "custom_output_plate"
     )
     
     
@@ -92,7 +92,7 @@ def run(protocol):
     
     # RT - PASO 2: RNA
     m20.flow_rate.aspirate = 20
-    m20.flor_rate.dispense = 20
+    m20.flow_rate.dispense = 20
     
     volumen_templado = 2 #uL
     
@@ -122,7 +122,6 @@ def run(protocol):
     
     
     # RT - PASO 3: Incubación (Pausing the protocol)
-    protocol.comment()
     protocol.pause("Incubar el output plate por 5 minutos minutos a 65°C. Luego de la incubación, devuelvelo al sitio 2 y presiona 'Continuar' para seguir con el protocolo")
     
     
