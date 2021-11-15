@@ -19,7 +19,7 @@ def get_values(*names):
 def run(protocol):
     
     [sample_number,
-     custom_tiprack, custom_output_plate] = get_values(
+     custom_tiprack, custom_sample_plate ,custom_output_plate] = get_values(
         "sample_number",
         "custom_tiprack", "custom_sample_plate", "custom_output_plate"
     )
