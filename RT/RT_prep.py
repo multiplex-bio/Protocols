@@ -13,7 +13,7 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8,"custom_tipracks":"no", "custom_sample_plate":"no", "custom_output_plate":"no"}""")
+    _all_values = json.loads("""{"sample_number":8, "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -26,13 +26,9 @@ def run(protocol):
     
     
     # TIPS
-    slots = ['4','5','6']  
+    slots = ['4','7','8']  
     
-    if custom_tipracks == 'yes':
-        tipracks = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'tiprack') for slot in slots]
-        
-    else:
-        tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'tiprack') for slot in slots]
+    tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'tiprack') for slot in slots]
     
     
     
@@ -59,7 +55,7 @@ def run(protocol):
     
     
     # Rack with reagents (eppendorf tubes)
-    eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 3, 'eppendorf rack')
+    eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 5, 'eppendorf rack')
     
     master_mix = eppendorf_rack.wells()[0]
     primer_h2o = eppendorf_rack.wells()[-1]
