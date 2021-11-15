@@ -28,7 +28,12 @@ def run(protocol):
     # TIPS
     slots = ['4','7','8']  
     
-    tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'tiprack') for slot in slots]
+    if custom_tipracks == 'yes':
+        # Another tiprack will be used.
+        tipracks = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'tiprack') for slot in slots]
+        
+    else:
+        tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'tiprack') for slot in slots]
     
     
     
