@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":16,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":56,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"no"}""")
     return [_all_values[n] for n in names]
 
 
@@ -43,7 +43,7 @@ def run(protocol_context):
     
     ## Labware
     if custom_output_plate == "yes":
-        output_plate = protocol_context.load_labware('spl_96_wellplate_200ul_with_cap', '2', 'output plate')
+        output_plate = protocol_context.load_labware('nest_96_wellplate_200ul_cap', '2', 'output plate')
     else:
         output_plate = protocol_context.load_labware('biorad_96_wellplate_200ul_pcr', '2', 'output plate')
     
@@ -178,7 +178,7 @@ def run(protocol_context):
     
     
     
-    # First wash: 130 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
+    # First wash: 150 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 30
@@ -191,7 +191,7 @@ def run(protocol_context):
         pipette.flow_rate.aspirate = 25
         pipette.flow_rate.dispense = 30
         pipette.pick_up_tip()
-        pipette.aspirate(130, ethanol_salt)
+        pipette.aspirate(150, ethanol_salt)
         protocol_context.delay(seconds=1)
         pipette.move_to(ethanol_salt.top(), speed = 20)
         pipette.air_gap(air_vol)
@@ -228,7 +228,7 @@ def run(protocol_context):
     ## || All removals are done with the same tip 
     pipette.pick_up_tip()
     for target in samples:
-        pipette.aspirate(130, target)
+        pipette.aspirate(150, target)
         pipette.move_to(target.top(), speed=20)
         pipette.air_gap(air_vol)
         pipette.flow_rate.dispense = 30
@@ -245,7 +245,7 @@ def run(protocol_context):
     
     
     
-    # Second wash: 130 uL of Ethanol (70% ethanol)
+    # Second wash: 150 uL of Ethanol (70% ethanol)
     ## || All washes and removals are done with the same tip 
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 150
@@ -254,7 +254,7 @@ def run(protocol_context):
     pipette.pick_up_tip()
     for target in samples:
         # Slowly aspirate the ethanol
-        pipette.aspirate(130, ethanol)
+        pipette.aspirate(150, ethanol)
         protocol_context.delay(seconds=1)
         pipette.move_to(ethanol.top(), speed = 20)
         pipette.air_gap(air_vol)
@@ -280,7 +280,7 @@ def run(protocol_context):
     
     # Remove second wash (70% ethanol)
     for target in samples:
-        pipette.aspirate(130, target)
+        pipette.aspirate(150, target)
         pipette.move_to(target.top(), speed=20)
         pipette.air_gap(air_vol)
         # pipette.flow_rate.dispense = 30
@@ -297,7 +297,7 @@ def run(protocol_context):
     
     
     
-    # Third wash: 130 uL of Ethanol (70% Ethanol)
+    # Third wash: 150 uL of Ethanol (70% Ethanol)
     ##\ Try using same tip for all
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 150
@@ -305,7 +305,7 @@ def run(protocol_context):
     pipette.pick_up_tip()
     for target in samples:
     # Slowly aspirate the ethanol
-        pipette.aspirate(130, ethanol2)
+        pipette.aspirate(150, ethanol2)
         protocol_context.delay(seconds=1)
         pipette.move_to(ethanol2.top(), speed = 20)
         pipette.air_gap(air_vol)
