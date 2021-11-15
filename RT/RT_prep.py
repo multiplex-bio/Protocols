@@ -13,7 +13,7 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8,"custom_tiprack":"no", "custom_sample_plate":"no", "custom_output_plate":"no"}""")
+    _all_values = json.loads("""{"sample_number":8,"custom_tiprack":"no", "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -40,7 +40,7 @@ def run(protocol):
     
     # RNA plates (96 well plates)
     if custom_sample_plate == 'yes':
-        sample_plate = protocol.load_labware('spl_96_wellplate_200ul_with_cap', 1, 'plate with RNA samples')
+        sample_plate = protocol.load_labware('nest_96_wellplate_200ul_cap', 1, 'plate with RNA samples')
         
     else:
         sample_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 1, 'plate with RNA samples')
@@ -51,7 +51,7 @@ def run(protocol):
     
     # Output plate (96 well plastic + adapter)
     if custom_output_plate == 'yes':
-        o_plate = protocol.load_labware('nest_96_wellplate_sless_adapter', 2, 'output plate')
+        o_plate = protocol.load_labware('nest_96_wellplate_300ul_skirtless', 2, 'output plate')
         
     else:
         o_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 2, 'output plate')
