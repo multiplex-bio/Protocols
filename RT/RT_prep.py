@@ -13,7 +13,7 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8, "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"sample_number":8,"custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
