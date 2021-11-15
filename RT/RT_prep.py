@@ -13,7 +13,7 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":96,"custom_tiprack":"no", "custom_output_plate":"no"}""")
+    _all_values = json.loads("""{"sample_number":8,"custom_tiprack":"no", "custom_sample_plate":"no", "custom_output_plate":"no"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -21,27 +21,25 @@ def run(protocol):
     [sample_number,
      custom_tiprack, custom_output_plate] = get_values(
         "sample_number",
-        "custom_tiprack", "custom_output_plate"
+        "custom_tiprack", "custom_sample_plate", "custom_output_plate"
     )
     
     
     # TIPS
-    slots = ['6','9']
+    slots = ['4','5','6']  
     
-    if custom_tiprack == 'yes':
-        big_tiprack = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'big tips tiprack') for slot in slots]
+    if custom_tipracks == 'yes':
+        tipracks = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'small tips tiprack') for slot in slots]
+        
     else:
-        big_tiprack = [protocol.load_labware('opentrons_96_tiprack_300ul', slot, 'big tips tiprack') for slot in slots]
-    
-    
-    small_tiprack = [protocol.load_labware('opentrons_96_tiprack_20ul', 4, 'small tips tiprack')]
+        tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'small tips tiprack') for slot in slots]
     
     
     
     # LABWARE:
     
     # RNA plates (96 well plates)
-    if custom_output_plate == 'yes':
+    if custom_sample_plate == 'yes':
         sample_plate = protocol.load_labware('spl_96_wellplate_200ul_with_cap', 1, 'plate with RNA samples')
         
     else:
@@ -52,7 +50,12 @@ def run(protocol):
     
     
     # Output plate (96 well plastic + adapter)
-    o_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 2, 'output plate') # The adapter makes it the same size as the biorad wellplate
+    if custom_output_plate == 'yes':
+        o_plate = protocol.load_labware('nest_96_wellplate_sless_adapter', 2, 'output plate')
+        
+    else:
+        o_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 2, 'output plate')
+    
     
     
     # Rack with reagents (eppendorf tubes)
@@ -64,38 +67,40 @@ def run(protocol):
     
     
     # INSTRUMENTS
-    m20 = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks = small_tiprack)
-    s300 = protocol.load_instrument('p300_single_gen2', 'left', tip_racks = big_tiprack)
+    m20 = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks = tipracks)
+    s20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks = tipracks)
+    
     
     
     
     # COMMANDS
-    
+
     # RT - PASO 1: Primers + H20
     vol_primers_h2o = sample_number*3 # Se necesitan 3 uL por muestra a procesar, por lo que se deben cargar originalmente un poco más de estos reactivos
-    #disposal_volume = vol_primers_h2o*0.15
     
-    s300.distribute(3,
+    s20.distribute(3,
                     primer_h2o, # From
                     [o_plate.wells()[:sample_number]], #To
-                    mix_before = (5, vol_primers_h2o - 2), # Mixing vol_primers_h2o 5 times
+                    mix_before = (3, 20), # Mixing vol_primers_h2o 5 times
                     blow_out = True,
                     blowout_location = 'source well',
-                    carryover = False # Split volumes when vol > pipette.max_volume
-                    #disposal_volume = disposal_volume
+                    carryover = True # Split volumes when vol > pipette.max_volume
                    )
     
     
     
     
     # RT - PASO 2: RNA
-    output_samples = [col for col in o_plate.rows()[0][:col_number]]
+    m20.flow_rate.aspirate = 20
+    m20.flor_rate.dispense = 20
     
     volumen_templado = 2 #uL
     
+    output_samples = [col for col in o_plate.rows()[0][:col_number]]
+    
     for rna_sample , output_sample in zip(rna_samples, output_samples):
         m20.pick_up_tip()
-        m20.mix(5, 15, rna_sample)
+        m20.mix(3, 20, rna_sample)
         m20.aspirate(volumen_templado, rna_sample)
         m20.dispense(m20.current_volume, output_sample.top(z=-5))
         
@@ -105,6 +110,7 @@ def run(protocol):
         
         m20.drop_tip()
         
+        ## EL CÓDIGO DE ARRIBA SE PUEDE RESUMIR EN LO DE ABAJO. SIN EMBARGO, EL DE ARRIBA SE PUEDE PERSONALIZAR PARA REALIZAR LAS FUNCIONES DE LA PIPETA A DISTINTAS ALTURAS
         #m20.transfer(volumen_templado,
         #            rna_sample,
         #            output_sample,
@@ -116,21 +122,23 @@ def run(protocol):
     
     
     # RT - PASO 3: Incubación (Pausing the protocol)
-    protocol.comment("Incubar por 5 minutos minutos a 65°C")
-    protocol.pause("Terminada la incubación, coloca el output plate en el sitio 2 y presiona 'Continuar' para seguir con el resto del protocolo")
+    protocol.comment()
+    protocol.pause("Incubar el output plate por 5 minutos minutos a 65°C. Luego de la incubación, devuelvelo al sitio 2 y presiona 'Continuar' para seguir con el protocolo")
     
     
     
     
     # RT - PASO 4: Master Mix
-    output_samples = o_plate.wells()[:sample_number]
+    s20.flow_rate.aspirate = 5
+    s20.flow_rate.dispense = 5
+    
     volumen_mastermix = 5 #uL
     
+    output_samples = o_plate.wells()[:sample_number]
+    
     for output_sample in output_samples:
-        s300.transfer(volumen_mastermix,
+        s20.transfer(volumen_mastermix,
                      master_mix,
                      output_sample,
                      blow_out = True,
                      blowout_location = 'destination well')
-        
-    
