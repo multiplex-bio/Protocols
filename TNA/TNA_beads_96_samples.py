@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":56,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"no"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":8,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 
