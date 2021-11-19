@@ -13,7 +13,9 @@ metadata = {
 
 def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8,"custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"sample_number":8, 
+    
+    "custom_tipracks":"no" , "custom_sample_plate":"yes", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -29,7 +31,7 @@ def run(protocol):
     slots = ['4','7','8']  
     
     if custom_tipracks == 'yes':
-        # Another tiprack will be used.
+        # Aún no existe necesidad de crear unas puntas custom de 20 uL. Cuando sea necesario se crearán y se va a actualizar el código.
         tipracks = [protocol.load_labware('vertex_96_tiprack_200ul', slot, 'tiprack') for slot in slots]
         
     else:
@@ -112,7 +114,7 @@ def run(protocol):
     for rna_sample , output_sample in zip(rna_samples, output_samples):
         m20.pick_up_tip()
         m20.mix(3, 20, rna_sample)
-        m20.aspirate(volumen_templado, rna_sample)
+        m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le da la profundidad necesaria para sacar 2uL del plate porque el diseño del palte me quedó un poco más alto de lo que es
         m20.dispense(m20.current_volume, output_sample)
         
         m20.blow_out(output_sample.bottom(z=5))
