@@ -1,3 +1,10 @@
+# Inventario de cosas por mejorar:
+
+# 1.- Implementar la función para que use menos de 8 canales con la pipeta multichannel en caso de tener columnas que queden incompletas
+# 2.- Agregar un condicional en el transfer final, de forma que la punta que se usó para el mixing del mastermix se pueda usar en la primera transferencia hacia el output plate. Luego, las 
+#     siguientes transferencias deben hacerse con una tip nueva.
+
+
 import json
 import math
 
@@ -15,7 +22,7 @@ def get_values(*names):
     # los valores para que las variables custom_* funcione son "yes" o "no"
     _all_values = json.loads("""{"sample_number":8, 
     
-    "custom_tipracks":"no" , "custom_sample_plate":"yes", "custom_output_plate":"yes"}""")
+    "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""")
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -121,20 +128,12 @@ def run(protocol):
         #m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         
         m20.drop_tip()
+
+    
+    
         
-        ## EL CÓDIGO DE ARRIBA SE PUEDE RESUMIR EN LO DE ABAJO. SIN EMBARGO, EL DE ARRIBA SE PUEDE PERSONALIZAR PARA REALIZAR LAS FUNCIONES DE LA PIPETA A DISTINTAS ALTURAS
-        #m20.transfer(volumen_templado,
-        #            rna_sample,
-        #            output_sample,
-        #            new_tip = 'always',
-        #            blow_out = True,
-        #            touch_tip = True)
-    
-    
-    
-    
     # RT - PASO 3: Incubación (Pausing the protocol)
-    protocol.pause("Incubar el output plate por 5 minutos minutos a 65°C. Luego de la incubación, devuelvelo al sitio 2 y presiona 'Continuar' para seguir con el protocolo")
+    protocol.pause("Incubar el output plate (ubicado en '2') por 5 minutos minutos a 65°C. Luego, devuelvelo a su sitio y presiona 'Continuar' para seguir con el protocolo")
     
     
     
