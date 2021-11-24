@@ -146,6 +146,7 @@ def run(protocol):
     
     
     
+    
     # RT - PASO 2: RNA
     protocol.comment("RNA")
     volumen_templado = 2 #uL
@@ -154,7 +155,8 @@ def run(protocol):
     m20.flow_rate.dispense = 20
     m20.flow_rate.blow_out = volumen_templado
     
-    #output_samples = [col for col in o_plate.rows()[0][:col_number]]
+    
+    
     
     
     # Complete cols
@@ -165,9 +167,8 @@ def run(protocol):
         m20.mix(3, 20, rna_sample)
         m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le da la profundidad necesaria para sacar 2uL del plate porque el diseño del palte me quedó un poco más alto de lo que es
         m20.dispense(m20.current_volume, output_sample)
-        
         m20.blow_out(output_sample.bottom(z=5))
-        
+        m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         m20.drop_tip()
     
     
@@ -218,6 +219,7 @@ def run(protocol):
         m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le da la profundidad necesaria para sacar 2uL.
         m20.dispense(m20.current_volume, output_sample)
         m20.blow_out(output_sample.bottom(z=5))
+        m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         m20.drop_tip()
     
     
@@ -286,4 +288,5 @@ def run(protocol):
                      output_sample,
                      new_tip = 'always',
                      blow_out = True,
+                     touch_tip = True,
                      blowout_location = 'destination well')
