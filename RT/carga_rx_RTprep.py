@@ -7,7 +7,7 @@ is_number = False
 
 while not is_number:
     try:
-        sample_number = int(input("\nIngresa la cantidad de muestras que quieres procesar: "))
+        sample_number = int(input("\nIngresa la cantidad de muestras que quieres procesar (considera los 4 controles como muestras): "))
         
         if sample_number >= 1 and sample_number < 97:
             is_number = True
@@ -44,11 +44,17 @@ vol_mastermix_my_samples = (sample_number+1)*5
 
 # Program's output ...
 
-print("\n\nPara preparar el mix de agua y primers, debes cargar los siguientes volumenes en un tubo eppendorf de 1.5 mL: ")
+print("\n\n-> Para preparar el mix de agua y primers, debes cargar los siguientes volumenes en un tubo eppendorf de 1.5 mL: ")
 print("\n\t{} uL de H2O nuclease free".format(vol_h2o_my_samples))
 print("\n\t{} uL de primers".format(vol_primers_my_samples))
-print("\n\tEl eppendorf con H2O free y Primers se debe colocar en la posición D6 del rack")
+print("\n\tEl eppendorf con H2O free y Primers se debe colocar en la posición A1 del rack")
 
-print("\n\nAdicionalmente, en otro tubo eppendorf de 1.5 mL, debes agregar: ")
+
+print("\n\n-> Adicionalmente, debes agregar: ")
+print("\n\t50 uL de Control + en un eppendorf, que se debe colocar en la posición B1 del rack\n")
+print("\t50 uL de Control - en un eppendorf, que se debe colocar en la posición C1 del rack\n")
+
+
+print("\n\n-> Finalmente, en otro tubo eppendorf de 1.5 mL, debes agregar: ")
 print("\n\t{} uL de Master Mix 2x".format(vol_mastermix_my_samples))
-print("\n\tEl eppendorf con Master Mix 2x se debe colocar en la posición A1 del rack\n")
+print("\n\tEl eppendorf con Master Mix 2x se debe colocar en la posición D1 del rack\n")
