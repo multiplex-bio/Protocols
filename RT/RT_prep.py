@@ -36,7 +36,7 @@ def run(protocol):
     
     
     # TIPS
-    slots = ['8','11','12']  
+    slots = ['8','10','11']  
     special_slot = ['4']
     
     if custom_tipracks == 'yes':
