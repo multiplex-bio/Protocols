@@ -1,9 +1,3 @@
-# Inventario de cosas por implementar/mejorar:
-
-# 3.- Agregar un condicional en el transfer final, de forma que la punta que se usó para el mixing del mastermix se pueda usar en la primera transferencia hacia el output plate. Luego, las 
-#     siguientes transferencias deben hacerse con una tip nueva.
-
-
 import json
 import math
 
@@ -21,7 +15,7 @@ def get_values(*names):
     # Sample number = cantidad de muestras + 4 controles (positivo y negativo de la extracción y RT)
     
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":18, 
+    _all_values = json.loads("""{"sample_number":8, 
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
@@ -53,8 +47,6 @@ def run(protocol):
     # LABWARE:
     
     
-    
-    
     # RNA plates (96 well plates)
     if custom_sample_plate == 'yes':
         sample_plate = protocol.load_labware('nest_96_wellplate_200ul_cap', 1, 'plate with RNA samples')
@@ -67,14 +59,27 @@ def run(protocol):
     num_of_complete_cols = divmod(sample_number, 8)[0]
 
     
-    # COMPLETE COLS IN RNA PLATE: Where are them    
-    rna_samples_complete_cols = [col for col in sample_plate.rows()[0][:num_of_complete_cols]]
-    #print("rna_samples_complete_cols: ", rna_samples_complete_cols)
+    # If all the columns in the plate are full of samples ...
+    if sample_number % 8 == 0:
+        # COMPLETE COLS IN RNA PLATE: Where are them 
+        rna_samples_complete_cols = [col for col in sample_plate.rows()[0][:num_of_complete_cols]]
+        #print("rna_samples_complete_cols: ", rna_samples_complete_cols)
+        
+        # INCOMPLETE COLS IN RNA PLATE: Where are them
+        rna_samples_incomplete_cols = [col for col in sample_plate.rows()[0][num_of_complete_cols:num_of_complete_cols]]
+        #print("rna_samples_incomplete_cols : ", rna_samples_incomplete_cols)
+        
+            
+            
+    # If at least one columns in the plate isn't full of samples ...
+    else:
+        # COMPLETE COLS IN RNA PLATE: Where are them    
+        rna_samples_complete_cols = [col for col in sample_plate.rows()[0][:num_of_complete_cols]]
+        #print("rna_samples_complete_cols: ", rna_samples_complete_cols)
     
-    
-    # INCOMPLETE COLS IN RNA PLATE: Where are them
-    rna_samples_incomplete_cols = [col for col in sample_plate.rows()[0][num_of_complete_cols:col_number]]
-    #print("rna_samples_incomplete_cols : ", rna_samples_incomplete_cols)
+        # INCOMPLETE COLS IN RNA PLATE: Where are them
+        rna_samples_incomplete_cols = [col for col in sample_plate.rows()[0][num_of_complete_cols:col_number]]
+        #print("rna_samples_incomplete_cols : ", rna_samples_incomplete_cols)
     
     
     
@@ -89,13 +94,26 @@ def run(protocol):
         o_plate = protocol.load_labware('biorad_96_wellplate_200ul_pcr', 2, 'output plate')
     
     
-    # COMPLETE COLS IN OUTPUTPLATE: Where are them
-    output_samples_complete_cols = [col for col in o_plate.rows()[0][:num_of_complete_cols]]
-    #print("output_samples_complete_cols: ", output_samples_complete_cols)
+    # If all the columns in the plate are full of samples ...
+    if sample_number % 8 ==0 :
+        # COMPLETE COLS IN OUTPUTPLATE: Where are them
+        output_samples_complete_cols = [col for col in o_plate.rows()[0][:num_of_complete_cols]]
+        #print("output_samples_complete_cols: ", output_samples_complete_cols)
+        
+        # INCOMPLETE COLS IN OUTPUT PLATE: Where are them
+        output_samples_incomplete_cols = [col for col in o_plate.rows()[0][num_of_complete_cols:num_of_complete_cols]]
+        #print("output_samples_incomplete_cols : ", output_samples_incomplete_cols)
+        
+        
+    # If at least one columns in the plate isn't full of samples ...
+    else:
+        # COMPLETE COLS IN OUTPUTPLATE: Where are them
+        output_samples_complete_cols = [col for col in o_plate.rows()[0][:num_of_complete_cols]]
+        #print("output_samples_complete_cols: ", output_samples_complete_cols)
     
-    # INCOMPLETE COLS IN OUTPUT PLATE: Where are them
-    output_samples_incomplete_cols= [col for col in o_plate.rows()[0][num_of_complete_cols:col_number]]
-    #print("output_samples_incomplete_cols : ", output_samples_incomplete_cols)
+        # INCOMPLETE COLS IN OUTPUT PLATE: Where are them
+        output_samples_incomplete_cols= [col for col in o_plate.rows()[0][num_of_complete_cols:col_number]]
+        #print("output_samples_incomplete_cols : ", output_samples_incomplete_cols)
     
     
     
@@ -134,7 +152,7 @@ def run(protocol):
     
     s20.distribute(3,
                    primer_h2o, # From
-                   [o_plate.wells()[:sample_number]], #To
+                   [o_plate.wells()[:sample_number+2]], # +2 por los controles del RT que no vienen en la placa
                    new_tip = 'never',
                    blow_out = True,
                    blowout_location = 'source well',
@@ -162,25 +180,40 @@ def run(protocol):
     # Complete cols
     protocol.comment("Complete cols")
     
-    for rna_sample , output_sample in zip(rna_samples_complete_cols, output_samples_complete_cols):
-        m20.pick_up_tip()
-        m20.mix(3, 20, rna_sample)
-        m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le da la profundidad necesaria para sacar 2uL del plate porque el diseño del palte me quedó un poco más alto de lo que es
-        m20.dispense(m20.current_volume, output_sample)
-        m20.blow_out(output_sample.bottom(z=5))
-        m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
-        m20.drop_tip()
+    if len(rna_samples_complete_cols) == 0: 
+        pass # DO NOTHING if there are no complete cols 
+    # We said there were 8 samples, but just 6 of them were loaded when the protocol began
+        
+    else: # Transfer RNA samples if there a complete
+        for rna_sample , output_sample in zip(rna_samples_complete_cols, output_samples_complete_cols):
+            m20.pick_up_tip()
+            m20.mix(3, 20, rna_sample)
+            m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le permite sacar 2uL, porque el diseño del palte me quedó un poco más alto de lo que es
+            m20.dispense(m20.current_volume, output_sample)
+            m20.blow_out(output_sample.bottom(z=5))
+            m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
+            m20.drop_tip()
     
     
     
-    # Replace the m20 pipette with itself. This will allow us to use it with the special tiprack
+    # Replace the m20 pipette with the same pipette. This will allow us to use it with the special tiprack
     m20 = protocol.load_instrument('p20_multi_gen2', 'right', replace = True)  
     
+    m20.flow_rate.aspirate = 20
+    m20.flow_rate.dispense = 20
+    m20.flow_rate.blow_out = volumen_templado
     
-    num_wells_on_incomplete_cols = divmod(sample_number, 8)[1]
+    if sample_number % 8 == 0: 
+        # If the colum will be filled when we add the controls, then we have 6 samples in the incomplete colum
+        num_wells_on_incomplete_cols = 6
+        
+    else:
+        num_wells_on_incomplete_cols = divmod(sample_number, 8)[1]
+    
+    
     num_channels_per_pickup = num_wells_on_incomplete_cols
-    # (only pickup tips on front-most channel)
 
+    
     per_tip_pickup_current = 0.075
     # (current required for picking up one tip, do not modify unless
     # you are using a GEN2 P300 8-Channel in which case change it to 
@@ -221,15 +254,11 @@ def run(protocol):
         m20.blow_out(output_sample.bottom(z=5))
         m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         m20.drop_tip()
-    
-    
-    
-    
-    
-    
+        
+        
     # Additionally, we determine the position for the RT controls (positive and negative, IN THIS EXACT ORDER)
-    output_well_with_positive_control = o_plate.wells()[sample_number-2] # The well before the last well. -2 Because python starts its lists at 0
-    output_well_with_negative_control = o_plate.wells()[sample_number-1] # Last well
+    output_well_with_positive_control = o_plate.wells()[sample_number] # The well after the last well with sample. sample_number because python starts its lists at 0
+    output_well_with_negative_control = o_plate.wells()[sample_number+1] # 2 wells after the last well with sample. +1 because python starts its lists at 0
     
     # Ctrl + 
     s20.flow_rate.aspirate = 20
@@ -280,7 +309,7 @@ def run(protocol):
     s20.flow_rate.dispense = 5
     s20.flow_rate.blow_out = 5
     
-    output_samples = o_plate.wells()[:sample_number]
+    output_samples = o_plate.wells()[:sample_number+2] # +2 por los controles del RT que no vienen en la placa
     
     for output_sample in output_samples:
         s20.transfer(volumen_mastermix,
