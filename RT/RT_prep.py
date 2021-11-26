@@ -12,10 +12,10 @@ metadata = {
 
 
 def get_values(*names):
-    # Sample number = cantidad de muestras + 4 controles (positivo y negativo de la extracción y RT)
+    # Sample number = cantidad de muestras + 2 controles (positivo y negativo de la extracción)
     
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":8, 
+    _all_values = json.loads("""{"sample_number":56, 
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
