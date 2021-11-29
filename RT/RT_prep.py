@@ -143,9 +143,9 @@ def run(protocol):
     protocol.comment("Primers y H2O")
     vol_primers_h2o = sample_number*3 # Se necesitan 3 uL por muestra a procesar, por lo que se deben cargar originalmente un poco más de estos reactivos
     
-    s20.flow_rate.aspirate = 100
-    s20.flow_rate.dispense = 100
-    s20.flow_rate.blow_out = 3
+    s20.flow_rate.aspirate = 50
+    s20.flow_rate.dispense = 50
+    s20.flow_rate.blow_out = 1
     
     s20.pick_up_tip()
     s20.mix(5, 20, primer_h2o) # Mixing the eppendorf with primers+h2o 5 times with 20 uL
@@ -169,8 +169,8 @@ def run(protocol):
     protocol.comment("RNA")
     volumen_templado = 2 #uL
     
-    m20.flow_rate.aspirate = 20
-    m20.flow_rate.dispense = 20
+    m20.flow_rate.aspirate = 5
+    m20.flow_rate.dispense = 5
     m20.flow_rate.blow_out = 1
     
     
@@ -199,9 +199,9 @@ def run(protocol):
     # Replace the m20 pipette with the same pipette. This will allow us to use it with the special tiprack
     m20 = protocol.load_instrument('p20_multi_gen2', 'right', replace = True)  
     
-    m20.flow_rate.aspirate = 20
-    m20.flow_rate.dispense = 20
-    m20.flow_rate.blow_out = volumen_templado
+    m20.flow_rate.aspirate = 5
+    m20.flow_rate.dispense = 5
+    m20.flow_rate.blow_out = 1
     
     if sample_number % 8 == 0: 
         # If the colum will be filled when we add the controls, then we have 6 samples in the incomplete colum
@@ -261,9 +261,9 @@ def run(protocol):
     output_well_with_negative_control = o_plate.wells()[sample_number+1] # 2 wells after the last well with sample. +1 because python starts its lists at 0
     
     # Ctrl + 
-    s20.flow_rate.aspirate = 20
-    s20.flow_rate.dispense = 20
-    s20.flow_rate.blow_out = volumen_templado
+    s20.flow_rate.aspirate = 5
+    s20.flow_rate.dispense = 5
+    s20.flow_rate.blow_out = 1
     
     protocol.comment("Ctrl +")
     s20.pick_up_tip()
@@ -305,9 +305,9 @@ def run(protocol):
     s20.mix(5, 20, master_mix)
     s20.drop_tip()
     
-    s20.flow_rate.aspirate = 5
-    s20.flow_rate.dispense = 5
-    s20.flow_rate.blow_out = 5
+    s20.flow_rate.aspirate = 2
+    s20.flow_rate.dispense = 2
+    s20.flow_rate.blow_out = 1
     
     output_samples = o_plate.wells()[:sample_number+2] # +2 por los controles del RT que no vienen en la placa
     
