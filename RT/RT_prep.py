@@ -15,7 +15,7 @@ def get_values(*names):
     # Sample number = cantidad de muestras + 2 controles (positivo y negativo de la extracción)
     
     # los valores para que las variables custom_* funcione son "yes" o "no"
-    _all_values = json.loads("""{"sample_number":56, 
+    _all_values = json.loads("""{"sample_number":12, 
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
@@ -171,7 +171,7 @@ def run(protocol):
     
     m20.flow_rate.aspirate = 20
     m20.flow_rate.dispense = 20
-    m20.flow_rate.blow_out = volumen_templado
+    m20.flow_rate.blow_out = 1
     
     
     
@@ -187,7 +187,7 @@ def run(protocol):
     else: # Transfer RNA samples if there a complete
         for rna_sample , output_sample in zip(rna_samples_complete_cols, output_samples_complete_cols):
             m20.pick_up_tip()
-            m20.mix(3, 20, rna_sample)
+            m20.mix(3, 20, rna_sample.bottom())
             m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le permite sacar 2uL, porque el diseño del palte me quedó un poco más alto de lo que es
             m20.dispense(m20.current_volume, output_sample)
             m20.blow_out(output_sample.bottom(z=5))
@@ -312,10 +312,18 @@ def run(protocol):
     output_samples = o_plate.wells()[:sample_number+2] # +2 por los controles del RT que no vienen en la placa
     
     for output_sample in output_samples:
-        s20.transfer(volumen_mastermix,
-                     master_mix,
-                     output_sample,
-                     new_tip = 'always',
-                     blow_out = True,
-                     touch_tip = True,
-                     blowout_location = 'destination well')
+        s20.pick_up_tip()
+        s20.aspirate(volumen_mastermix, master_mix)
+        s20.dispense(s20.current_volume, output_sample)
+        s20.blow_out(output_sample.top(z=-5))
+        s20.touch_tip(output_sample, v_offset=-0.5, speed=50)
+        s20.drop_tip()
+    
+    
+        #s20.transfer(volumen_mastermix,
+        #             master_mix,
+        #             output_sample,
+        #             new_tip = 'always',
+        #             blow_out = True,
+        #             blowout_location = 'destination well',
+        #             touch_tip = True)
