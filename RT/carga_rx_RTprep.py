@@ -37,7 +37,7 @@ vol_h2o_my_samples = round(vol_my_samples * h2o_prop, 2)
 vol_primers_my_samples = round(vol_my_samples * primers_prop, 2)
 
 # Additionally, we need 5 uL of mastermix for each sample, so we will use
-vol_mastermix_my_samples = (sample_number+1)*5
+vol_mastermix_my_samples = (sample_number+5)*5 # We load an extra of mastermix.
 
 
 
