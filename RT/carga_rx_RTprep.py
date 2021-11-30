@@ -9,7 +9,7 @@ while not is_number:
     try:
         sample_number = int(input("\nIngresa la cantidad de muestras que quieres procesar (considera los 4 controles como muestras): "))
         
-        if sample_number >= 1 and sample_number < 94:
+        if sample_number >= 1 and sample_number <= 94:
             is_number = True
             
         else:
@@ -26,7 +26,7 @@ while not is_number:
 
 # We need a mix h2o and primers:
 vol_96_samples = 335 # uL needed to analyze 96 samples
-vol_my_samples = round((vol_96_samples * sample_number) / 96, 2) # uL needed the samples I want to analyze
+vol_my_samples = round((vol_96_samples * (sample_number + 2)) / 96, 2) # uL needed the samples I want to analyze
 
 # The mix with primers and h2o nuclease free has the following proportions:
 h2o_prop = 11/12
