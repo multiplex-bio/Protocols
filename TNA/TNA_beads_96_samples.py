@@ -12,8 +12,9 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":8,"sample_volume":50,"bead_ratio":1,"elution_buffer_volume":35,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":88,"sample_volume":75,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"yes"}""")
     return [_all_values[n] for n in names]
+
 
 
 metadata = {
@@ -115,7 +116,7 @@ def run(protocol_context):
     
 
     # Defining bead and mix volume
-    bead_volume = sample_volume * bead_ratio #  bead_volume = 50 * 1
+    bead_volume = sample_volume * bead_ratio #  bead_volume = 75 * 1
 
     if bead_volume < 30:
         bead_volume = 30
@@ -155,7 +156,7 @@ def run(protocol_context):
     # Engagae MagDeck and incubate
     mag_deck.engage(height=10)
         
-    # Incubation time with iman for 5 mins
+    # Incubation time with iman for 7 mins
     for i in range(settling_time):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, settling_time))
         
@@ -178,7 +179,7 @@ def run(protocol_context):
     
     
     
-    # First wash: 150 uL of Ethanol salt (70% ethanol and NaCl 0.5M)
+    # First wash: 150 uL of Ethanol salt (70% ethanol and CaCl2 0.5M)
     # NOTE: All washing steps and the drying steps are done with the iman
     pipette.flow_rate.aspirate = 25
     pipette.flow_rate.dispense = 30
@@ -363,7 +364,7 @@ def run(protocol_context):
     
     
     
-    # Elution with 55 uL of elution buffer (ultra pure H2O) and then apply a strong mix
+    # Elution with 40 uL of elution buffer (ultra pure H2O) and then apply a strong mix
     pipette.flow_rate.aspirate = 50
     pipette.flow_rate.dispense = 300
     for target in samples:
@@ -386,7 +387,7 @@ def run(protocol_context):
         protocol_context.delay(minutes=1, msg= '{} minutes passed out of a total of {} minutes'.format(i, settling_time))
     
     
-    # Transfer 50 uL of PCR product to a new well
+    # Transfer 53 uL of PCR product to a new well
     pipette.flow_rate.aspirate = 10
     pipette.well_bottom_clearance.aspirate = 1.5
     for target, dest in zip(samples, output):
