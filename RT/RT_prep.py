@@ -15,6 +15,7 @@ def get_values(*names):
     # Sample number = cantidad de muestras + 2 controles (positivo y negativo de la extracción)
     
     # los valores para que las variables custom_* funcione son "yes" o "no"
+    # Valor máximo para sample_number es 94
     _all_values = json.loads("""{"sample_number":12, 
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
