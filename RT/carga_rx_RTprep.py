@@ -9,14 +9,14 @@ while not is_number:
     try:
         sample_number = int(input("\nIngresa la cantidad de muestras que quieres procesar (considera los 4 controles como muestras): "))
         
-        if sample_number >= 1 and sample_number < 97:
+        if sample_number >= 1 and sample_number < 94:
             is_number = True
             
         else:
-            print("\nDebes ingresar un número entre 1 y 96")
+            print("\nDebes ingresar un número entre 1 y 94")
             
     except ValueError:
-        print("\nDebes ingresar un número entre 1 y 96")
+        print("\nDebes ingresar un número entre 1 y 94")
     
 
     
