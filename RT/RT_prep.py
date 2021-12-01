@@ -1,5 +1,6 @@
 # INVENTARIO DE COSAS POR HACER / MEJORAR:
 # 1.- Hacer el distribute de forma manual en el paso de Primers+H20
+# 1.1.- Hacer que el blow out del H20+primers sea más rápido
 
 import json
 import math
@@ -129,9 +130,11 @@ def run(protocol):
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 5, 'eppendorf rack')
     
     primer_h2o = eppendorf_rack.wells()[0] # A1
-    ctrl_positivo = eppendorf_rack.wells()[1] # B1
-    ctrl_negativo = eppendorf_rack.wells()[2] # C1
-    master_mix = eppendorf_rack.wells()[3] # D1
+    master_mix = eppendorf_rack.wells()[1] # B1
+    ctrl_negativo = eppendorf_rack.wells()[-2] # C6
+    ctrl_positivo = eppendorf_rack.wells()[-1] # D6
+    
+
     
     
     # INSTRUMENTS
