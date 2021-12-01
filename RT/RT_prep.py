@@ -152,7 +152,7 @@ def run(protocol):
     
     s20.flow_rate.aspirate = 50
     s20.flow_rate.dispense = 50
-    s20.flow_rate.blow_out = 10
+    s20.flow_rate.blow_out = 50
     
     s20.pick_up_tip()
     s20.mix(5, 20, primer_h2o) # Mixing the eppendorf with primers+h2o 5 times with 20 uL
@@ -330,12 +330,3 @@ def run(protocol):
         s20.blow_out(output_sample.top(z=-5))
         s20.touch_tip(output_sample, v_offset=-0.5, speed=50)
         s20.drop_tip()
-    
-    
-        #s20.transfer(volumen_mastermix,
-        #             master_mix,
-        #             output_sample,
-        #             new_tip = 'always',
-        #             blow_out = True,
-        #             blowout_location = 'destination well',
-        #             touch_tip = True)
