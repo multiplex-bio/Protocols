@@ -7,11 +7,11 @@ Python scripts to conduct molecular biology protocols using OT-2 pipetting robot
 Description of folders
 --
 
-PCR: Protocols to prepare the PCR reactions (no the PCR itself) in Opentrons
+qPCR: Protocols to prepare the qPCR reactions (no the qPCR itself) in Opentrons
 
 TNA: Protocols for Total Nucleic Acid extraction in Opentrons.
 
-RT: Protocols for the Retrotranscription of RNA to cDNA in Opentrons
+RT: Protocols for the Retrotranscription of RNA into cDNA in Opentrons
 
 ELISA: Protocols to conduct ELISA tests in Opentrons
 
