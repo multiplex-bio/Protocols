@@ -19,7 +19,7 @@ def get_values(*names):
     # Los valores para que las variables custom_* funcione son "yes" o "no"
     
     # Máximo valor de RT_sample_number es 94
-    _all_values = json.loads("""{"RT_sample_number":57,
+    _all_values = json.loads("""{"RT_sample_number":12,
     
     "custom_tiprack":"no", "custom_rt_plate":"no","custom_pcr_plate":"no", "replicates":2}""")
     return [_all_values[n] for n in names]
@@ -344,14 +344,15 @@ def run(protocol):
       tip_count += 1
     
     
-    print("pairs_of_rep_cols_incomp : ", pairs_of_rep_cols_incomp)
     
-    for col in range(len(pairs_of_rep_cols_incomp)):
-        special_pick_up(m20)
-        m20.transfer(template_volume,
-                     rt_plate_incomplete_cols[col],
-                     pairs_of_rep_cols_incomp[col],
-                     new_tip = 'never')
+    for rt_col in rt_plate_incomplete_cols :
+        for rep_col in list_flattener(pairs_of_rep_cols_incomp):
+            special_pick_up(m20)
+            m20.aspirate(template_volume, rt_col)
+            m20.dispense(m20.current_volume, rep_col)
+            m20.drop_tip()
+    
+    
     
     
     
@@ -416,7 +417,7 @@ def run(protocol):
     
     # qPCR - PASO 4: Realizar el qPCR
     if len(pcr_slots) <= 1:
-        protocol.pause("Retirar las output plates (slot '4') y realizar el programa de qPCR en el termociclador")
+        protocol.comment("Retirar las output plates (slot '4') y realizar el programa de qPCR en el termociclador")
     else:
-        protocol.pause("Retirar las output plates (slots '4' y '7') y realizar el programa de qPCR en el termociclador")
+        protocol.comment("Retirar las output plates (slots '4' y '7') y realizar el programa de qPCR en el termociclador")
     
