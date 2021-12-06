@@ -19,7 +19,7 @@ def get_values(*names):
     # Los valores para que las variables custom_* funcione son "yes" o "no"
     
     # Máximo valor de RT_sample_number es 94
-    _all_values = json.loads("""{"RT_sample_number":12,
+    _all_values = json.loads("""{"RT_sample_number":70,
     
     "custom_tiprack":"no", "custom_rt_plate":"no","custom_pcr_plate":"no", "replicates":2}""")
     return [_all_values[n] for n in names]
@@ -281,6 +281,7 @@ def run(protocol):
     m20.flow_rate.blow_out = 1
     
     
+    print("pairs_of_rep_cols_comp : ", pairs_of_rep_cols_comp)
     for col in range(len(pairs_of_rep_cols_comp)):
         m20.transfer(template_volume,
                      rt_plate_complete_cols[col],
