@@ -337,9 +337,9 @@ def run(protocol):
     s20.mix(5, 20, master_mix)
     s20.drop_tip()
     
-    s20.flow_rate.aspirate = 2.5
-    s20.flow_rate.dispense = 2.5
-    s20.flow_rate.blow_out = 2.5
+    s20.flow_rate.aspirate = 2
+    s20.flow_rate.dispense = 2
+    s20.flow_rate.blow_out = 2
     
     output_samples = o_plate.wells()[:sample_number+2] # +2 por los controles del RT que no vienen en la placa
     
