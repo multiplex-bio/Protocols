@@ -1,6 +1,5 @@
 # INVENTARIO DE COSAS POR HACER / MEJORAR:
 # 1.- Hacer el distribute de forma manual en el paso de Primers+H20
-# 1.1.- Hacer que el blow out del H20+primers sea más rápido
 
 import json
 import math
@@ -20,9 +19,9 @@ def get_values(*names):
     
     # los valores para que las variables custom_* funcione son "yes" o "no"
     # Valor máximo para sample_number es 94
-    _all_values = json.loads("""{"sample_number":12, 
+    _all_values = json.loads("""{"sample_number":20, 
     
-    "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
+    "custom_tipracks":"no" , "custom_sample_plate":"yes", "custom_output_plate":"yes"}""") 
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -141,9 +140,9 @@ def run(protocol):
     # RT - PASO 1: Primers + H20
     protocol.comment("Primers y H2O")
     
-    s20.flow_rate.aspirate = 50
-    s20.flow_rate.dispense = 50
-    s20.flow_rate.blow_out = 50
+    s20.flow_rate.aspirate = 15
+    s20.flow_rate.dispense = 15
+    s20.flow_rate.blow_out = 15
     
     s20.pick_up_tip()
     s20.mix(5, 20, primer_h2o) # Mixing the eppendorf with primers+h2o 5 times with 20 uL
@@ -152,9 +151,8 @@ def run(protocol):
                    primer_h2o, # From
                    [o_plate.wells()[:sample_number+2]], # +2 por los controles del RT que no vienen en la placa
                    new_tip = 'never',
-                   #blow_out = True,
-                   #blowout_location = 'source well',
-                   #touch_tip = True,
+                   blow_out = True,
+                   blowout_location = 'source well',
                    carryover = True # Split volumes when vol > pipette.max_volume
                   )
     
@@ -167,6 +165,11 @@ def run(protocol):
     # RT - PASO 2: RNA
     protocol.comment("RNA")
     volumen_templado = 2 #uL
+    
+    
+    m20.well_bottom_clearance.aspirate = 0.6
+    m20.well_bottom_clearance.dispense = 0.6
+    
     
     m20.flow_rate.aspirate = 5
     m20.flow_rate.dispense = 5
@@ -185,21 +188,9 @@ def run(protocol):
     else: # Transfer RNA samples if there a complete
         for rna_sample , output_sample in zip(rna_samples_complete_cols, output_samples_complete_cols):
             m20.pick_up_tip()
-            m20.mix(3, 20, rna_sample.bottom(z=0.5))
-            
-            # TEST
-            protocol.delay(2, msg = "Delay for 2 seconds")
-            # TEST END
-            
-            m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le permite sacar 2uL, porque el diseño del palte me quedó un poco más alto de lo que es
+            m20.mix(3, 20, rna_sample)
+            m20.aspirate(volumen_templado, rna_sample) 
             m20.touch_tip(rna_sample, v_offset = -0.5, speed = 50)
-            
-            # TEST
-            m20.move_to(rna_sample.top())
-            protocol.delay(2, msg = "Delay for 2 seconds")
-            # TEST END
-            
-            
             m20.dispense(m20.current_volume, output_sample)
             m20.blow_out(output_sample.top(z=-0.5))
             m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
@@ -207,6 +198,7 @@ def run(protocol):
     
     
     
+    protocol.comment("Incomplete cols")
     # Replace the m20 pipette with the same pipette. This will allow us to use it with the special tiprack
     m20 = protocol.load_instrument('p20_multi_gen2', 'right', replace = True)  
     
@@ -251,40 +243,29 @@ def run(protocol):
       tip_count += 1
     
     
+    m20.well_bottom_clearance.aspirate = 0.6
+    m20.well_bottom_clearance.dispense = 0.6
     
-    
-    
-    protocol.comment("Incomplete cols")
     
     m20.flow_rate.aspirate = 5
     m20.flow_rate.dispense = 5
     m20.flow_rate.blow_out = 5
     
+    
     for rna_sample , output_sample in zip(rna_samples_incomplete_cols, output_samples_incomplete_cols):
         special_pick_up(m20)
-        m20.mix(3,20, rna_sample.bottom(z=0.5))
-        
-        # TEST
-        protocol.delay(seconds = 2)
-        # TEST END
-        
-        m20.aspirate(volumen_templado, rna_sample.bottom()) # El bottom le da la profundidad necesaria para sacar 2uL.
+        m20.mix(3,20, rna_sample)
+        m20.aspirate(volumen_templado, rna_sample)
         m20.touch_tip(rna_sample, v_offset = -0.5, speed = 50)
-        
-        # TEST
-        m20.move_to(rna_sample.top())
-        protocol.delay(seconds = 2)
-        # TEST END
-        
         m20.dispense(m20.current_volume, output_sample)
         m20.blow_out(output_sample.top(z=-0.5))
         m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         m20.drop_tip()
+    
         
         
-        
-        
-        
+    
+    
     # Additionally, we determine the position for the RT controls (positive and negative, IN THIS EXACT ORDER)
     output_well_with_positive_control = o_plate.wells()[sample_number] # The well after the last well with sample. sample_number because python starts its lists at 0
     output_well_with_negative_control = o_plate.wells()[sample_number+1] # 2 wells after the last well with sample. +1 because python starts its lists at 0
