@@ -12,7 +12,7 @@ from opentrons import types
 
 def get_values(*names):
     # Here you must change the values to meet your needs 
-    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":80,"sample_volume":75,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"yes", "custom_output_plate":"yes"}""")
+    _all_values = json.loads("""{"mag_mod":"magnetic module gen2", "pipette_type":"p300_multi_gen2","pipette_mount":"right","sample_number":48,"sample_volume":75,"bead_ratio":1,"elution_buffer_volume":50,"incubation_time":7,"settling_time":7,"drying_time":5,"custom_tiprack":"no", "custom_output_plate":"no"}""")
     return [_all_values[n] for n in names]
 
 
@@ -391,4 +391,9 @@ def run(protocol_context):
     pipette.flow_rate.aspirate = 10
     pipette.well_bottom_clearance.aspirate = 1.5
     for target, dest in zip(samples, output):
-        pipette.transfer(elution_buffer_volume, target, dest, blow_out=True)
+        pipette.pick_up_tip()
+        pipette.aspirate(elution_buffer_volume, target)
+        pipette.dispense(pipette.current_volume, dest)
+        pipette.blow_out(dest.top(z=-0.5))
+        pipette.touch_tip(dest, v_offset = -0.5, speed = 50)
+        pipette.drop_tip()
