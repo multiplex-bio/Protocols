@@ -21,8 +21,8 @@ while not is_number:
     
 # Calculamos la cantidad de volumen que vamos a usar para cada reactivo
 vol_total_beads = (75 * (sample_number+5))/1000 # (uL usados para cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
-vol_total_etanol = (150 * (sample_number+5))/1000 # (uL usados para lavar cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
-vol_total_etanol_sal = (150 * (sample_number+5))/1000 # (uL usados para lavar cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
+vol_total_etanol = (160 * (sample_number+5))/1000 # (uL usados para lavar cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
+vol_total_etanol_sal = (160 * (sample_number+5))/1000 # (uL usados para lavar cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
 vol_total_elution_buffer = (65 * (sample_number+5))/1000 # (uL usados para lavar cada muestra * Cantidad de muestras) / 1000 para tener el volumen en mL
 
 
