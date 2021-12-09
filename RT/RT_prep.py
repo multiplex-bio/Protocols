@@ -1,5 +1,8 @@
 # INVENTARIO DE COSAS POR HACER / MEJORAR:
-# 1.- Hacer el distribute de forma manual en el paso de Primers+H20
+# 1.- Hacer el hight tracking para manipular el mastermix
+# 2.- Implementar que las salidas de las puntas de pipeta sean más lentas de los pocillos una vez que estos tienen mastermix
+# 3.- Hacer el distribute de forma manual en el paso de Primers+H20 -> Hacer salidas lentas y touch_tip luego del blow_out
+
 
 import json
 import math
