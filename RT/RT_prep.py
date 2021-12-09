@@ -167,8 +167,8 @@ def run(protocol):
     volumen_templado = 2 #uL
     
     
-    m20.well_bottom_clearance.aspirate = 0.6
-    m20.well_bottom_clearance.dispense = 0.6
+    m20.well_bottom_clearance.aspirate = 0.7
+    m20.well_bottom_clearance.dispense = 0.7
     
     
     m20.flow_rate.aspirate = 5
@@ -192,7 +192,7 @@ def run(protocol):
             m20.aspirate(volumen_templado, rna_sample) 
             m20.touch_tip(rna_sample, v_offset = -0.5, speed = 50)
             m20.dispense(m20.current_volume, output_sample)
-            m20.blow_out(output_sample.top(z=-0.5))
+            m20.blow_out(output_sample.bottom(z=1.0))
             m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
             m20.drop_tip()
     
@@ -243,8 +243,8 @@ def run(protocol):
       tip_count += 1
     
     
-    m20.well_bottom_clearance.aspirate = 0.6
-    m20.well_bottom_clearance.dispense = 0.6
+    m20.well_bottom_clearance.aspirate = 0.7
+    m20.well_bottom_clearance.dispense = 0.7
     
     
     m20.flow_rate.aspirate = 5
@@ -258,7 +258,7 @@ def run(protocol):
         m20.aspirate(volumen_templado, rna_sample)
         m20.touch_tip(rna_sample, v_offset = -0.5, speed = 50)
         m20.dispense(m20.current_volume, output_sample)
-        m20.blow_out(output_sample.top(z=-0.5))
+        m20.blow_out(output_sample.bottom(z=1.0))
         m20.touch_tip(output_sample, v_offset = -0.5, speed = 50)
         m20.drop_tip()
     
