@@ -1,7 +1,6 @@
 # INVENTARIO DE COSAS POR HACER / MEJORAR:
 # 1.- Hacer el hight tracking para manipular el mastermix
-# 2.- Implementar que las salidas de las puntas de pipeta sean más lentas de los pocillos una vez que estos tienen mastermix
-# 3.- Hacer el distribute de forma manual en el paso de Primers+H20 -> Hacer salidas lentas y touch_tip luego del blow_out
+# 2.- Hacer el distribute de forma manual en el paso de Primers+H20 -> Hacer salidas lentas y touch_tip luego del blow_out
 
 
 import json
@@ -329,8 +328,17 @@ def run(protocol):
     
     for output_sample in output_samples:
         s20.pick_up_tip()
+        
+        # Slow movements to aspirte mastermix
+        s20.move_to(master_mix.top())
+        s20.move_to(master_mix.bottom(z=1), speed = 2)
         s20.aspirate(volumen_mastermix, master_mix)
+        
+        # Slow movements to leave mastermix eppendorf and to dispense mastermix on wells
+        s20.move_to(master_mix.top(), speed = 2)
         s20.dispense(s20.current_volume, output_sample)
+        s20.move_to(output_sample.top(z=-5), speed = 2)
+        
         s20.blow_out(output_sample.top(z=-5))
         s20.touch_tip(output_sample, v_offset=-0.5, speed=50)
         s20.drop_tip()
