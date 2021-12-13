@@ -318,7 +318,8 @@ def run(protocol):
     
     s20.pick_up_tip()
     s20.mix(5, 20, master_mix)
-    s20.drop_tip()
+    s20.blow_out(master_mix.top(z=-1))
+    #s20.drop_tip()
     
     s20.flow_rate.aspirate = 2
     s20.flow_rate.dispense = 2
@@ -327,7 +328,8 @@ def run(protocol):
     output_samples = o_plate.wells()[:sample_number+2] # +2 por los controles del RT que no vienen en la placa
     
     for output_sample in output_samples:
-        s20.pick_up_tip()
+        if not s20.has_tip: # New
+            s20.pick_up_tip() # Tab added in order to place this line within the if statement
         
         # Slow movements to aspirte mastermix
         s20.move_to(master_mix.top())
