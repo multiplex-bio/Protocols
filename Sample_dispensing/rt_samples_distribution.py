@@ -91,12 +91,14 @@ def run(protocol):
     s20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks = tipracks)
     
     
+    # Definimos que ambas pipetas van a tomar y dispensar líquido a 0.7 mm del bottom del recipiente, lo que se vió que es óptimo para el 'custom_sample_plate'
+    m20.well_bottom_clearance.aspirate = 0.7
+    m20.well_bottom_clearance.dispense = 0.7
+    
+    s20.well_bottom_clearance.aspirate = 0.7
+    s20.well_bottom_clearance.dispense = 0.7
     
     
-    
-    #Quiero que se traspasen las muestras desde una columna del sample_plate a una columna del output_plate. Para eso es importante que antes haga el checkeo de cuantas puntas debe tomar para realizar el traspaso.
-    
-    # PREPARACIÓN:
     
     
     
@@ -104,11 +106,9 @@ def run(protocol):
     
     # Por 'num_cols_completas' sabemos el número de columnas completas que hay en cada placa.
     num_cols_completas = [divmod(number, 8)[0] for number in sample_number]
-    #print("\nnum_cols_completas : ", num_cols_completas)
     
     # Por 'num_pocillos_col_incompleta' sabemos cuantos pocillos de la columna incompleta tienen muestras, lo que nos permite tomar el número exacto de puntas necesarias.
     num_pocillos_col_incompleta = [divmod(number, 8)[1] for number in sample_number]
-    #print("\nnum_pocillos_col_incompleta : ", num_pocillos_col_incompleta)
     
     
 
@@ -117,39 +117,39 @@ def run(protocol):
     # LISTA CON LAS COLUMNAS COMPLETAS EN CADA RACK
     protocol.comment("\nCOMPLETE COLUMNS :")
     
-    # La 'list_of_complete_columns_through_racks' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras
+    
+    # PREPARACIÓN DE LISTAS:
+    
+    #LISTA1: La 'list_of_complete_columns_through_sample_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras
     list_of_complete_columns_through_sample_plates = []
     
     for num, plate in zip(num_cols_completas, sample_plates):
             for col in plate.rows()[0][:num]:
                 list_of_complete_columns_through_sample_plates.append(col)
-
-    #print("\nlist_of_complete_columns_through_sample_plates : ", list_of_complete_columns_through_sample_plates)            
     
     
     
     
-    
+    #LISTA2: La 'list_of_complete_columns_through_output_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras
     list_of_complete_columns_through_output_plates = []
     
     for num, plate in zip(num_cols_completas, output_plates):
             for col in plate.rows()[0][:num]:
                 list_of_complete_columns_through_output_plates.append(col)
 
-    #print("\nlist_of_complete_columns_through_output_plates : ", list_of_complete_columns_through_output_plates)
         
         
         
 
-    
-    # Transfering the RNA from sample_plates to output_plates (Complete columns only)
-    
+    #LISTA3: La 'lista_de_tips' es una lista de listas. Cada elemento es, a su vez, una lista con todas las columnas con puntas de cada rack
     lista_de_tips = []
     for rack, numero in zip(tipracks, num_cols_completas):
         lista_de_tips.append(rack.rows()[0][:numero])
     
     lista_de_tips = [subelement for element in lista_de_tips for subelement in element] # Make the previous list 'lista_de_puntas' a flat list
     
+    
+    # Transfering the RNA from sample_plates to output_plates (Complete columns only)
     for sample_col, output_col, tip_col in zip(list_of_complete_columns_through_sample_plates, list_of_complete_columns_through_output_plates, lista_de_tips):
         m20.pick_up_tip(tip_col)
         #m20.mix(20, 5, sample_col)
@@ -180,7 +180,6 @@ def run(protocol):
             for col in plate.rows()[0][num_complete:num_complete+1]:
                 list_of_incomplete_columns_through_sample_plates.append(col)
     
-    #print("\nlist_of_incomplete_columns_through_sample_plates : ", list_of_incomplete_columns_through_sample_plates)
     
     
     
@@ -195,7 +194,6 @@ def run(protocol):
             for col in plate.rows()[0][num_complete:num_complete+1]:
                 list_of_incomplete_columns_through_output_plates.append(col)
 
-    #print("\nlist_of_incomplete_columns_through_output_plates : ", list_of_incomplete_columns_through_output_plates)
     
     
     
@@ -208,7 +206,6 @@ def run(protocol):
         else: # All columns in that rack are complete columns
             special_pick_up_tip_list.append(None)
     
-    #print("\nspecial_pick_up_tip_list : ", special_pick_up_tip_list)
     
     
     
@@ -217,8 +214,6 @@ def run(protocol):
     per_tip_pickup_current = .075 # 0.075 para p20 y 0.1 para p300
     
     for sample_col, output_col, num_incomplete_wells, tips in zip(list_of_incomplete_columns_through_sample_plates, list_of_incomplete_columns_through_output_plates, num_pocillos_col_incompleta, special_pick_up_tip_list):
-        
-        #print("\nsample_col : ", sample_col, " | output_col : ", output_col, " | num_incomplete_wells : ", num_incomplete_wells, " | tips : ", tips)
         
         if num_incomplete_wells != 0 and tips != None : # Si la columna está incompleta, entonces:
             # Definimos la cantidad de corriente que se va a usar para el pick up dependiendo de la cantidad de tips que se necesitan tomar
@@ -233,11 +228,12 @@ def run(protocol):
 
     
     
-    # Transfering the Positive Controls from TubeRack to output_plates
+    
     protocol.comment("\nPOSITIVE CONTROLS : ")
+    # Transfering the Positive Controls from TubeRack to output_plates
     for total_number_of_samples, plate in zip(sample_number, output_plates):
         s20.pick_up_tip()
-        #s20.mix(20, 5, eppendorf_control_positivo)
+        s20.mix(20, 5, eppendorf_control_positivo)
         s20.aspirate(2, eppendorf_control_positivo)
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.dispense(s20.current_volume, plate.wells()[total_number_of_samples])
@@ -248,11 +244,11 @@ def run(protocol):
     
     
     
-    # Transfering the Negative Controls from TubeRack to output_plates
     protocol.comment("\nNEGATIVE CONTROLS : ")
+    # Transfering the Negative Controls from TubeRack to output_plates
     for total_number_of_samples, plate in zip(sample_number, output_plates):
         s20.pick_up_tip()
-        #s20.mix(20, 5, eppendorf_control_positivo)
+        s20.mix(20, 5, eppendorf_control_positivo)
         s20.aspirate(2, eppendorf_control_negativo)
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.dispense(s20.current_volume, plate.wells()[total_number_of_samples+1])
