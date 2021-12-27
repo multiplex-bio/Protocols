@@ -91,14 +91,6 @@ def run(protocol):
     s20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks = tipracks)
     
     
-    # Definimos que ambas pipetas van a tomar y dispensar líquido a 0.7 mm del bottom del recipiente, lo que se vió que es óptimo para el 'custom_sample_plate'
-    m20.well_bottom_clearance.aspirate = 0.7
-    m20.well_bottom_clearance.dispense = 0.7
-    
-    s20.well_bottom_clearance.aspirate = 0.7
-    s20.well_bottom_clearance.dispense = 0.7
-    
-    
     
     
     
@@ -116,7 +108,6 @@ def run(protocol):
     
     # LISTA CON LAS COLUMNAS COMPLETAS EN CADA RACK
     protocol.comment("\nCOMPLETE COLUMNS :")
-    
     
     # PREPARACIÓN DE LISTAS:
     
@@ -150,6 +141,9 @@ def run(protocol):
     
     
     # Transfering the RNA from sample_plates to output_plates (Complete columns only)
+    m20.well_bottom_clearance.aspirate = 1
+    m20.well_bottom_clearance.dispense = 1
+    
     for sample_col, output_col, tip_col in zip(list_of_complete_columns_through_sample_plates, list_of_complete_columns_through_output_plates, lista_de_tips):
         m20.pick_up_tip(tip_col)
         m20.mix(10, 5, sample_col)
@@ -210,6 +204,8 @@ def run(protocol):
     
     
     
+    m20.well_bottom_clearance.aspirate = 1
+    m20.well_bottom_clearance.dispense = 1
     
     per_tip_pickup_current = .075 # 0.075 para p20 y 0.1 para p300
     
@@ -218,21 +214,25 @@ def run(protocol):
         if num_incomplete_wells != 0 and tips != None : # Si la columna está incompleta, entonces:
             # Definimos la cantidad de corriente que se va a usar para el pick up dependiendo de la cantidad de tips que se necesitan tomar
             pick_up_current = num_incomplete_wells*per_tip_pickup_current
-        
-            m20.well_bottom_clearance.aspirate = 0.7
-            m20.well_bottom_clearance.dispense = 0.7
+            
+            protocol._implementation._hw_manager.hardware._attached_instruments[
+            m20._implementation.get_mount()
+            ].update_config_item('pick_up_current', pick_up_current)
             
             m20.pick_up_tip(tips)
-            m20.mix(10, 5, sample_col.bottom(z=0.7))
-            m20.aspirate(2, sample_col.bottom(z=0.7))
-            m20.dispense(m20.current_volume, output_col.bottom(z=0.7))
+            m20.mix(10, 5, sample_col)
+            m20.aspirate(2, sample_col)
+            m20.dispense(m20.current_volume, output_col)
             m20.blow_out(output_col.top(z=-1))
             m20.touch_tip(v_offset=-0.5, speed=50)
             m20.drop_tip()
         
     
-
     
+    
+    
+    s20.well_bottom_clearance.aspirate = 1
+    s20.well_bottom_clearance.dispense = 1
     
     
     protocol.comment("\nPOSITIVE CONTROLS : ")
