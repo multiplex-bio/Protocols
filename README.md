@@ -7,7 +7,7 @@ Python scripts to conduct molecular biology protocols using OT-2 pipetting robot
 Details:
 --
 
-qPCR: Protocols to prepare the qPCR reactions (no the qPCR itself) in Opentrons
+qPCR: Protocols to prepare the qPCR reactions in Opentrons (it is not the qPCR itself)
 
 TNA: Protocols for Total Nucleic Acid extraction in Opentrons.
 
