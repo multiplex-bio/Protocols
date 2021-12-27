@@ -23,9 +23,10 @@ def get_values(*names):
     
     # Ejemplo 1: [19, 53, 40]. Esto quiere decir que el primer plate tiene 19 muestras, el segundo 53, y el tercero 40
     # Ejemplo 2: [50]. Esto quiere decir que se va a procesar sólo una placa y que esta tiene 50 muestras
-    _all_values = json.loads("""{"sample_number":[5, 3, 2],
+    # Ejemplo 3: [8, 43]. Esto quiere decir que se van a procesar 2 placas. Una de 8 muestras y la otra de 43 muestras.
+    _all_values = json.loads("""{"sample_number":[1, 3, 2],
     
-    "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
+    "custom_tipracks":"no" , "custom_sample_plate":"yes", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
 
 def run(protocol):
@@ -141,8 +142,8 @@ def run(protocol):
     
     
     # Transfering the RNA from sample_plates to output_plates (Complete columns only)
-    m20.well_bottom_clearance.aspirate = 1
-    m20.well_bottom_clearance.dispense = 1
+    m20.well_bottom_clearance.aspirate = 0.6
+    m20.well_bottom_clearance.dispense = 0.6
     
     for sample_col, output_col, tip_col in zip(list_of_complete_columns_through_sample_plates, list_of_complete_columns_through_output_plates, lista_de_tips):
         m20.pick_up_tip(tip_col)
@@ -204,8 +205,8 @@ def run(protocol):
     
     
     
-    m20.well_bottom_clearance.aspirate = 1
-    m20.well_bottom_clearance.dispense = 1
+    m20.well_bottom_clearance.aspirate = 0.6
+    m20.well_bottom_clearance.dispense = 0.6
     
     per_tip_pickup_current = .075 # 0.075 para p20 y 0.1 para p300
     
@@ -229,10 +230,6 @@ def run(protocol):
         
     
     
-    
-    
-    s20.well_bottom_clearance.aspirate = 1
-    s20.well_bottom_clearance.dispense = 1
     
     
     protocol.comment("\nPOSITIVE CONTROLS : ")
