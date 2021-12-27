@@ -23,7 +23,7 @@ def get_values(*names):
     
     # Ejemplo 1: [19, 53, 40]. Esto quiere decir que el primer plate tiene 19 muestras, el segundo 53, y el tercero 40
     # Ejemplo 2: [50]. Esto quiere decir que se va a procesar sólo una placa y que esta tiene 50 muestras
-    _all_values = json.loads("""{"sample_number":[16, 5, 24],
+    _all_values = json.loads("""{"sample_number":[5, 3, 2],
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
@@ -152,9 +152,10 @@ def run(protocol):
     # Transfering the RNA from sample_plates to output_plates (Complete columns only)
     for sample_col, output_col, tip_col in zip(list_of_complete_columns_through_sample_plates, list_of_complete_columns_through_output_plates, lista_de_tips):
         m20.pick_up_tip(tip_col)
-        #m20.mix(20, 5, sample_col)
+        m20.mix(10, 5, sample_col)
         m20.aspirate(2, sample_col)
-        m20.dispense(2, output_col)
+        m20.dispense(m20.current_volume, output_col)
+        m20.blow_out(output_col.top(z=-1))
         m20.touch_tip(v_offset=-0.5, speed=50)
         m20.drop_tip()
         
@@ -165,7 +166,6 @@ def run(protocol):
     
     # Transfering the RNA from sample_plates to output_plates (Incomplete columns only)
     protocol.comment("\nINCOMPLETE COLUMNS :")
-    
     
     # LISTA CON LAS COLUMNAS INCOMPLETAS EN CADA RACK
         
@@ -218,9 +218,15 @@ def run(protocol):
         if num_incomplete_wells != 0 and tips != None : # Si la columna está incompleta, entonces:
             # Definimos la cantidad de corriente que se va a usar para el pick up dependiendo de la cantidad de tips que se necesitan tomar
             pick_up_current = num_incomplete_wells*per_tip_pickup_current
+        
+            m20.well_bottom_clearance.aspirate = 0.7
+            m20.well_bottom_clearance.dispense = 0.7
+            
             m20.pick_up_tip(tips)
-            m20.aspirate(2, sample_col)
-            m20.dispense(2, output_col)
+            m20.mix(10, 5, sample_col.bottom(z=0.7))
+            m20.aspirate(2, sample_col.bottom(z=0.7))
+            m20.dispense(m20.current_volume, output_col.bottom(z=0.7))
+            m20.blow_out(output_col.top(z=-1))
             m20.touch_tip(v_offset=-0.5, speed=50)
             m20.drop_tip()
         
@@ -233,10 +239,11 @@ def run(protocol):
     # Transfering the Positive Controls from TubeRack to output_plates
     for total_number_of_samples, plate in zip(sample_number, output_plates):
         s20.pick_up_tip()
-        s20.mix(20, 5, eppendorf_control_positivo)
+        s20.mix(10, 5, eppendorf_control_positivo)
         s20.aspirate(2, eppendorf_control_positivo)
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.dispense(s20.current_volume, plate.wells()[total_number_of_samples])
+        s20.blow_out(plate.wells()[total_number_of_samples].top(z=-1))
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.drop_tip()
     
@@ -248,9 +255,10 @@ def run(protocol):
     # Transfering the Negative Controls from TubeRack to output_plates
     for total_number_of_samples, plate in zip(sample_number, output_plates):
         s20.pick_up_tip()
-        s20.mix(20, 5, eppendorf_control_positivo)
+        s20.mix(10, 5, eppendorf_control_negativo)
         s20.aspirate(2, eppendorf_control_negativo)
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.dispense(s20.current_volume, plate.wells()[total_number_of_samples+1])
+        s20.blow_out(plate.wells()[total_number_of_samples+1].top(z=-1))
         s20.touch_tip(v_offset=-0.5, speed=50)
         s20.drop_tip()
