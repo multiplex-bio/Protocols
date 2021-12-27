@@ -1,6 +1,3 @@
-# LISTA DE COSAS POR HACER:
-
-# HACER QUE SE PUEDAN TOMAR LAS PUNTAS DEL TIPRACK CON MENOS DE 8 CANALES DE ACUERDO A CUANTAS PUNTAS VAYA A NECESITAR
 
 import json
 
@@ -42,7 +39,6 @@ def run(protocol):
     # LABWARE DEFINITION:
     
     print("\nsample_number : ", sample_number)
-    #print("\nlen sample_number : ", len(sample_number))
     
     # RNA plates (96 well plates)
     samples_slots = ['4', '5', '6'][:len(sample_number)]
