@@ -19,7 +19,7 @@ def get_values(*names):
     
     # Ejemplo 1: [50]. Esto quiere decir que se va a procesar sólo una placa y que esta tiene 50 muestras
     # Ejemplo 2: [8, 43]. Esto quiere decir que se van a procesar 2 placas. Una de 8 muestras y la otra de 43 muestras.
-    _all_values = json.loads("""{"sample_number":[46, 48],
+    _all_values = json.loads("""{"sample_number":[1, 1],
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
@@ -101,8 +101,7 @@ def run(protocol):
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 9, 'eppendorf rack')
     
     eppendorf_control_positivo = eppendorf_rack.wells()[0] # A1 del tuberack; esquina superior izquierda
-    eppendorf_control_negativo = eppendorf_rack.wells()[-1] # D6 del tuberack; esquina inferior derecha
-    
+    eppendorf_control_negativo = eppendorf_rack.wells()[3] # D1 del tuberack; esquina inferior izquierda
     
     
     # INSTRUMENTS:
@@ -163,7 +162,7 @@ def run(protocol):
             
             # Paso de muestras desde el sample_plate a la primera replica de las output_plates
             m20.pick_up_tip(tip_col)
-            m20.mix(5, 10, sample_col)
+            m20.mix(2, 10, sample_col)
             m20.aspirate(template_volume*2, sample_col) # Tomamos el doble del volumen de templado que se necesita, para luego hacer una réplica técnica dividiendo el volumen total a la mitad
             m20.dispense(m20.current_volume, output1_col)
             m20.mix(5, 20, output1_col)
@@ -251,7 +250,7 @@ def run(protocol):
                 
                 # Toma template desde el sample_plate y lo lleva a la primera réplica (esto lo hace con menos de 8 puntas).
                 m20.pick_up_tip(tip_col)
-                m20.mix(5, 10, sample_col)
+                m20.mix(2, 10, sample_col)
                 m20.aspirate(template_volume*2, sample_col)
                 m20.dispense(m20.current_volume, output1_col)
                 m20.mix(5, 20, output1_col)
@@ -281,9 +280,12 @@ def run(protocol):
             output_wells_control_positivo_rep1.append(o_plate1.wells()[number]) 
             output_wells_control_positivo_rep2.append(o_plate2.wells()[number])
     
+    s20.pick_up_tip()
+    s20.mix(5, 10, eppendorf_control_positivo)
+    
     for well_ctrl_positivo_rep1, well_ctrl_positivo_rep2 in zip(output_wells_control_positivo_rep1, output_wells_control_positivo_rep2):
-        s20.pick_up_tip()
-        s20.mix(5, 10, eppendorf_control_positivo)
+        if not s20.has_tip:
+            s20.pick_up_tip()
         s20.aspirate(template_volume*2, eppendorf_control_positivo)
         s20.dispense(s20.current_volume, well_ctrl_positivo_rep1)
         s20.mix(5, 20, well_ctrl_positivo_rep1)
@@ -313,10 +315,13 @@ def run(protocol):
             # Los controles se encuentran en 2 placas distintas. Ambos van justo después de la cantidad de muestras.
             output_wells_control_negativo_rep1.append(o_plate1.wells()[number+1]) 
             output_wells_control_negativo_rep2.append(o_plate2.wells()[number+1])
-     
+    
+    s20.pick_up_tip()
+    s20.mix(5, 10, eppendorf_control_negativo)
+    
     for well_ctrl_negativo_rep1, well_ctrl_negativo_rep2 in zip(output_wells_control_negativo_rep1, output_wells_control_negativo_rep2):
-        s20.pick_up_tip()
-        s20.mix(5, 10, eppendorf_control_negativo)
+        if not s20.has_tip:
+            s20.pick_up_tip()
         s20.aspirate(template_volume*2, eppendorf_control_negativo)
         s20.dispense(s20.current_volume, well_ctrl_negativo_rep1)
         s20.mix(5, 20, well_ctrl_negativo_rep1)
