@@ -57,10 +57,11 @@ def run(protocol):
     
     
     
-    # Final Products (96 well plates)
+    # Plates with reactions ready to be PCR-ed (96 well plates)
     output_slots_set1 = ['4', '5'][:len(sample_number)]
     available_slots_set2 = ['1', '2'][:len(sample_number)] # Esta lista contiene posiciones que están disponibles, pero aún no se sabe si van a ser usadas o no.
     
+    # Definimos la cantidad de placas que van a ser usadas en función de la cantidad de muestras en cada placa de las sample_plates:
     # Si algún 'sample_number' es mayor a 46, entonces tendremos que usar 2 output_plates. Esta condicion es checkeada en el siguiente statement 
     output_slots_set2 = []
     for sampleNumber, slot_set2 in zip(sample_number, available_slots_set2):
@@ -71,6 +72,7 @@ def run(protocol):
     #print("output_slots_set2 : ", output_slots_set2)
     
     
+    # Podemos elegir placas customizadas
     if custom_output_plate == 'yes':
         output_plates1 = [protocol.load_labware('nest_96_wellplate_300ul_skirtless', slot, 'output plate') for slot in output_slots_set1]
         # En caso de que se tengan que usar 2 output_plates para una misma sample_plate (porque tiene más de 46 muestras), indicamos en qué parte del deck se encontraran esas 2 plates
@@ -78,17 +80,17 @@ def run(protocol):
         for slot in output_slots_set2:
             if slot is not None:
                 output_plates2.append(protocol.load_labware('nest_96_wellplate_300ul_skirtless', slot, 'output plate'))
-            else:
+            else: # Si no se usan 2 output_plates, se explicita eso con un None
                 output_plates2.append(None)
                 
-    else:
+    else: # No queremos usar placas customizables
         output_plates1 = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'output plate') for slot in output_slots_set1]
         # En caso de que se tengan que usar 2 output_plates para una misma sample_plate (porque tiene más de 46 muestras), indicamos en qué parte del deck se encontraran esas 2 plates
         output_plates2 = []
         for slot in output_slots_set2:
             if slot is not None:
                 output_plates2.append(protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'output plate'))
-            else:
+            else: # Si no se usan 2 output_plates, se explicita eso con un None
                 output_plates2.append(None)
     #print("output_plates1 : ", output_plates1)
     #print("output_plates2 : ", output_plates2)
@@ -98,8 +100,8 @@ def run(protocol):
     # Eppendorf tube rack
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 9, 'eppendorf rack')
     
-    eppendorf_control_positivo = eppendorf_rack.wells()[0] # A1
-    eppendorf_control_negativo = eppendorf_rack.wells()[-1] # D6
+    eppendorf_control_positivo = eppendorf_rack.wells()[0] # A1 del tuberack; esquina superior izquierda
+    eppendorf_control_negativo = eppendorf_rack.wells()[-1] # D6 del tuberack; esquina inferior derecha
     
     
     
@@ -116,10 +118,8 @@ def run(protocol):
     m20.well_bottom_clearance.aspirate = 0.6
     m20.well_bottom_clearance.dispense = 0.6
     
-    # Calculo cuantas columnas completas contiene mi sample_plate
-    # Reviso cada sample_plate y checkeo si hay 1 o 2 output_plates asociadas.
     
-    # una lista con las columnas completas del sample_plate
+    # Calculo cuantas columnas completas contiene mi sample_plate: una lista con las columnas completas del sample_plate
     s_plates_cmplt_cols = [] 
     for number, s_plate in zip(sample_number, sample_plates):
         # Lista con las columnas completas del sample_plate
@@ -127,18 +127,20 @@ def run(protocol):
     #print("\ns_plates_cmplt_cols : ", s_plates_cmplt_cols)
     
     
-    # Lista de columnas completas en el output_plate1
+    # Creo una lista que contendrá las columnas completas para el output_plate1 y 2
     o_plates_cmplt_cols_rep1 = []
     o_plates_cmplt_cols_rep2 = []
+    
+    # Reviso cada sample_plate y checkeo si hay 1 o 2 output_plates asociadas: 
     for number, o_plate1, o_plate2 in zip(sample_number, output_plates1, output_plates2): 
-        if o_plate2 is None: # Esa placa tiene sólo 1 output_plate asociada (tiene 46 muestras o menos)
+        if o_plate2 is None: # Esa sample_plate tiene sólo 1 output_plate asociada (tiene 46 muestras o menos)
             # una lista de columnas del output_plate1 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 1
             o_plates_cmplt_cols_rep1.append(o_plate1.rows()[0][:divmod(number, 8)[0]])
             # una lista de columnas del output_plate1 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 6
             o_plates_cmplt_cols_rep2.append(o_plate1.rows()[0][6:6+divmod(number, 8)[0]])
         
         
-        if o_plate2 is not None: # Esa placa tiene 2 output_plates asociadas (tiene 46 muestras o más)
+        if o_plate2 is not None: # Esa sample_plate tiene 2 output_plates asociadas (tiene 46 muestras o más)
             # una lista de columnas del output_plate1 y output_plate2 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 1
             o_plates_cmplt_cols_rep1.append(o_plate1.rows()[0][:divmod(number, 8)[0]])
             # una lista de columnas del output_plate1 y output_plate2 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 6
@@ -147,16 +149,19 @@ def run(protocol):
     #print("\no_plates_cmplt_cols_rep2 : ", o_plates_cmplt_cols_rep2)        
     
     
+    # Creo una lista que contendrá las columnas del tiprack que van a traspasar las columnas completas del sample_plate a las output_plates
     tips_cmplt_cols = []
     for rack, numero in zip(tipracks, sample_number):
         tips_cmplt_cols.append(rack.rows()[0][:divmod(numero, 8)[0]])
     #print("\ntips_cmplt_cols : ", tips_cmplt_cols)
     
     
+    # Instrucciones de paso de muestras:
     template_volume = 1
     for sample_sublist, output1_sublist, output2_sublist, tip_sublist in zip(s_plates_cmplt_cols, o_plates_cmplt_cols_rep1, o_plates_cmplt_cols_rep2, tips_cmplt_cols):
         for sample_col, output1_col, output2_col, tip_col in zip(sample_sublist, output1_sublist, output2_sublist, tip_sublist):
             
+            # Paso de muestras desde el sample_plate a la primera replica de las output_plates
             m20.pick_up_tip(tip_col)
             m20.mix(5, 10, sample_col)
             m20.aspirate(template_volume*2, sample_col) # Tomamos el doble del volumen de templado que se necesita, para luego hacer una réplica técnica dividiendo el volumen total a la mitad
@@ -178,6 +183,7 @@ def run(protocol):
     m20.well_bottom_clearance.aspirate = 0.6
     m20.well_bottom_clearance.dispense = 0.6
     
+    # Determino dónde está (si es que existe) la columna incompleta de mi sample_plate y lo guardo en una lista
     s_plates_incmplt_cols = [] 
     for number, s_plate in zip(sample_number, sample_plates):
         # Lista con las columnas completas del sample_plate
@@ -185,10 +191,13 @@ def run(protocol):
     #print("\ns_plates_incmplt_cols : ", s_plates_incmplt_cols)
     
     
-    # Lista de columnas completas en el output_plate1
+    # Determino dónde está (si es que existe) la(s) columna(s) incompleta(s) de mi output_plates, para las replicas 1 y 2.
     o_plates_incmplt_cols_rep1 = []
     o_plates_incmplt_cols_rep2 = []
+    
+    # Determino dónde estarán las primeras y segundas réplicas de la reacción:
     for number, o_plate1, o_plate2 in zip(sample_number, output_plates1, output_plates2): 
+        # Si el sample_plate tiene 46 muestras o menos, entonces tiene sólo un output_plate asociado, por lo que las réplicas son mitades de placa
         if o_plate2 is None: # Esa placa tiene sólo 1 output_plate asociada (tiene 46 muestras o menos)
             # una lista de columnas del output_plate1 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 1
             o_plates_incmplt_cols_rep1.append(o_plate1.rows()[0][divmod(number, 8)[0]:divmod(number, 8)[0]+1])
@@ -196,6 +205,7 @@ def run(protocol):
             o_plates_incmplt_cols_rep2.append(o_plate1.rows()[0][6+divmod(number, 8)[0]:6+divmod(number, 8)[0]+1]) # El +6 es porque estas replicas están en la segunda mitad de la placa
         
         
+        # Si el sample_plate tiene más de 46 muestras, entonces tiene 2 output_plates asociadas, por lo que las réplicas se encuentran en 2 placas distintas
         if o_plate2 is not None: # Esa placa tiene 2 output_plates asociadas (tiene 46 muestras o más)
             # una lista de columnas del output_plate1 y output_plate2 con una cantidad de columnas igual a la cantidad de columnas completas en el sample_plate que inicie desde la columna 1
             o_plates_incmplt_cols_rep1.append(o_plate1.rows()[0][divmod(number, 8)[0]:divmod(number, 8)[0]+1])
@@ -205,6 +215,7 @@ def run(protocol):
     #print("\no_plates_incmplt_cols_rep2 : ", o_plates_incmplt_cols_rep2)
     
     
+    # Creo una lista que contendrá las columnas del tiprack que van a traspasar las columnas incompletas del sample_plate a las output_plates
     tips_incmplt_cols = []
     for rack, numero in zip(tipracks, sample_number):
         # divmod(numero,8)[0] = número de columnas completas
@@ -214,27 +225,37 @@ def run(protocol):
     
         else: # Entonces todas las columnas están completas
             tips_incmplt_cols.append(None)      
+            # Es importante explicitar si no hay columnas incompletas, puesto que esta parte me va a permitir que luego el script decida si debe hacer el traspaso de columnas incompletas o no
     #print("\ntips_incmplt_cols : ", tips_incmplt_cols)
     
     
-    per_tip_pickup_current = .075 # 0.075 para p20 y 0.1 para p300
+    
+    # OJO: LA PIPETA USA UNA CANTIDAD DE CORRIENTE PARA HACER EL PICK_UP. 
+    # SI QUEREMOS HACER UN PICK_UP DE MENOS DE 8 TIPS, DEBEMOS DECIRLE QUE USE MENOS CORRIENTE. 
+    # PARA ESO DECLARAMOS EL SIGUIENTE VALOR:
+    per_tip_pickup_current = .075 # 0.075 es lo que usa la p20 para cada tip tomado, mientras que la p300 usa 0.1 por tip.
+    
     
     for number_of_samples, sample_sublist, output1_sublist, output2_sublist, tip_col in zip(sample_number, s_plates_incmplt_cols, o_plates_incmplt_cols_rep1, o_plates_incmplt_cols_rep2, tips_incmplt_cols):
         for sample_col, output1_col, output2_col in zip(sample_sublist, output1_sublist, output2_sublist):
-            if tip_col is not None:
-                pick_up_current = per_tip_pickup_current * divmod(number_of_samples, 8)[1]
-                #print("current : ", pick_up_current, "| samples : ", divmod(number_of_samples, 8)[1])
             
+            if tip_col is not None: # Este código se va a ejecutar SÓLO si hay columnas incompletas. Esto lo sabrá porque en el tips_incmplt_cols dijimos si habían columnas incompletas o no
+                
+                # Con esta parte le decimos que para tomar menos de 8 muestras, usará una cantidad de corriente igual al valor de corriente por tip (que depende de la pipeta) * el número de tips
+                pick_up_current = per_tip_pickup_current * divmod(number_of_samples, 8)[1]
+                #print("current : ", pick_up_current, "| samples : ", divmod(number_of_samples, 8)[1]) # Con esta línea se puede chequear que está usando valores de corriente distintos en cada toma
+                
                 protocol._implementation._hw_manager.hardware._attached_instruments[
                 m20._implementation.get_mount()
                 ].update_config_item('pick_up_current', pick_up_current)
-            
+                
+                # Toma template desde el sample_plate y lo lleva a la primera réplica (esto lo hace con menos de 8 puntas).
                 m20.pick_up_tip(tip_col)
                 m20.mix(5, 10, sample_col)
                 m20.aspirate(template_volume*2, sample_col)
                 m20.dispense(m20.current_volume, output1_col)
                 m20.mix(5, 20, output1_col)
-                # Desde una columna completa de un output_plate se pasa a otra columna completa que tendrá la réplica técnica
+                # Desde una columna incompleta de un output_plate se pasa a otra columna incompleta que tendrá la réplica técnica
                 m20.aspirate(15, output1_col)
                 m20.dispense(m20.current_volume, output2_col)
                 m20.blow_out(output2_col.top(z=-1))
