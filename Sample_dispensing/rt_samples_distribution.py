@@ -44,7 +44,7 @@ def run(protocol):
     samples_slots = ['4', '5', '6'][:len(sample_number)]
     
     if custom_sample_plate == 'yes':
-        sample_plates = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'plate with RNA samples') for slot in samples_slots]
+        sample_plates = [protocol.load_labware('nest_96_wellplate_200ul_cap', slot, 'plate with RNA samples') for slot in samples_slots]
     else:
         sample_plates = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'plate with RNA samples') for slot in samples_slots]
     
@@ -55,7 +55,7 @@ def run(protocol):
     output_slots = ['1', '2', '3'][:len(sample_number)]
     
     if custom_output_plate == 'yes':
-        output_plates = [protocol.load_labware('nest_96_wellplate_300ul_skirtless', slot, 'output plate') for slot in output_slots]
+        output_plates = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'output plate') for slot in output_slots]
     else:
         output_plates = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'output plate') for slot in output_slots]
         
