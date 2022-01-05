@@ -19,7 +19,7 @@ def get_values(*names):
     
     # Ejemplo 1: [50]. Esto quiere decir que se va a procesar sólo una placa y que esta tiene 50 muestras
     # Ejemplo 2: [8, 43]. Esto quiere decir que se van a procesar 2 placas. Una de 8 muestras y la otra de 43 muestras.
-    _all_values = json.loads("""{"sample_number":[1, 1],
+    _all_values = json.loads("""{"sample_number":[10],
     
     "custom_tipracks":"no" , "custom_sample_plate":"no", "custom_output_plate":"no"}""") 
     return [_all_values[n] for n in names]
@@ -51,7 +51,7 @@ def run(protocol):
     # cDNA plates (96 well plates)
     samples_slots = ['7', '8'][:len(sample_number)]
     if custom_sample_plate == 'yes':
-        sample_plates = [protocol.load_labware('nest_96_wellplate_200ul_cap', slot, 'plate with RNA samples') for slot in samples_slots]
+        sample_plates = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'plate with RNA samples') for slot in samples_slots]
     else:
         sample_plates = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'plate with RNA samples') for slot in samples_slots]
     
@@ -74,12 +74,12 @@ def run(protocol):
     
     # Podemos elegir placas customizadas
     if custom_output_plate == 'yes':
-        output_plates1 = [protocol.load_labware('nest_96_wellplate_300ul_skirtless', slot, 'output plate') for slot in output_slots_set1]
+        output_plates1 = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'output plate') for slot in output_slots_set1]
         # En caso de que se tengan que usar 2 output_plates para una misma sample_plate (porque tiene más de 46 muestras), indicamos en qué parte del deck se encontraran esas 2 plates
         output_plates2 = []
         for slot in output_slots_set2:
             if slot is not None:
-                output_plates2.append(protocol.load_labware('nest_96_wellplate_300ul_skirtless', slot, 'output plate'))
+                output_plates2.append(protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'output plate'))
             else: # Si no se usan 2 output_plates, se explicita eso con un None
                 output_plates2.append(None)
                 
