@@ -5,7 +5,7 @@ import json
 metadata = {
     'protocolName': 'RT sample distribution',
     'author': 'Multiplex <bvalderrama@multiplex.bio>',
-    'description': 'RTs samples distribution',
+    'description': 'RTs samples distribution this script can handle up to 3 extraction plates',
     'source': 'Made by multiplex',
     'apiLevel': '2.11'
     }
@@ -44,7 +44,7 @@ def run(protocol):
     samples_slots = ['4', '5', '6'][:len(sample_number)]
     
     if custom_sample_plate == 'yes':
-        sample_plates = [protocol.load_labware('nest_96_wellplate_200ul_cap', slot, 'plate with RNA samples') for slot in samples_slots]
+        sample_plates = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'plate with RNA samples') for slot in samples_slots]
     else:
         sample_plates = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'plate with RNA samples') for slot in samples_slots]
     
