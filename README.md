@@ -15,7 +15,7 @@ RT: Protocols for the Retrotranscription of RNA into cDNA in Opentrons
 
 ELISA: Protocols to conduct ELISA tests in Opentrons
 
-Sample_Dispensing: Using the OT-2 to move samples from the input plate to the output plate after using the Mantis for RT and qPCR
+Sample_Dispensing_after_MasterMix: Using the OT-2 to move samples from the input plate to the output plate after using the Mantis for dispensing the RT or qPCR MasterMix
 
 
 --
