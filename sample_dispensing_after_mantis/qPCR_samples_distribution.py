@@ -4,7 +4,7 @@ import json
 metadata = {
     'protocolName': 'qPCR sample distribution',
     'author': 'Multiplex <bvalderrama@multiplex.bio>',
-    'description': 'qPCRs samples distribution this script can handle up to 2 plates with RT samples',
+    'description': 'qPCRs samples distribution. This script can handle up to 2 plates with RT samples and has to be used after dispensing the mastermix with Mantis',
     'source': 'Made by multiplex',
     'apiLevel': '2.11'
     }
@@ -32,13 +32,10 @@ def run(protocol):
         "custom_tipracks", "custom_sample_plate", "custom_output_plate"
     )
     
-    #print("\nsample_number : ", sample_number)
     
     
-    
-    # Tips
+    # Import Tips
     tip_slots = ['10', '11'][:len(sample_number)]
-    #print("\ntip_slots : ", tip_slots)
     
     if custom_tipracks == 'yes':
         # Las custom tipracks para p20 no están implementadas aún.
@@ -48,7 +45,7 @@ def run(protocol):
     
     
     
-    # cDNA plates (96 well plates)
+    # Import cDNA plates (96 well plates)
     samples_slots = ['7', '8'][:len(sample_number)]
     if custom_sample_plate == 'yes':
         sample_plates = [protocol.load_labware('chancho_96wells_300ul_semiskirt', slot, 'plate with RNA samples') for slot in samples_slots]
@@ -57,9 +54,10 @@ def run(protocol):
     
     
     
-    # Plates with reactions ready to be PCR-ed (96 well plates)
+    # Plates with mastermix that are waiting for template (96 well plates)
     output_slots_set1 = ['4', '5'][:len(sample_number)]
     available_slots_set2 = ['1', '2'][:len(sample_number)] # Esta lista contiene posiciones que están disponibles, pero aún no se sabe si van a ser usadas o no.
+    
     
     # Definimos la cantidad de placas que van a ser usadas en función de la cantidad de muestras en cada placa de las sample_plates:
     # Si algún 'sample_number' es mayor a 46, entonces tendremos que usar 2 output_plates. Esta condicion es checkeada en el siguiente statement 
@@ -70,6 +68,7 @@ def run(protocol):
         else: # Si el sample_plate tiene más de 46 muestras, entonces se va a usar un segundo plate
             output_slots_set2.append(slot_set2)      
     #print("output_slots_set2 : ", output_slots_set2)
+    
     
     
     # Podemos elegir placas customizadas
@@ -83,7 +82,7 @@ def run(protocol):
             else: # Si no se usan 2 output_plates, se explicita eso con un None
                 output_plates2.append(None)
                 
-    else: # No queremos usar placas customizables
+    else: # No queremos usar placas customizadas
         output_plates1 = [protocol.load_labware('biorad_96_wellplate_200ul_pcr', slot, 'output plate') for slot in output_slots_set1]
         # En caso de que se tengan que usar 2 output_plates para una misma sample_plate (porque tiene más de 46 muestras), indicamos en qué parte del deck se encontraran esas 2 plates
         output_plates2 = []
@@ -97,14 +96,14 @@ def run(protocol):
     
     
     
-    # Eppendorf tube rack
+    # Importamos Eppendorf tube rack
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 9, 'eppendorf rack')
     
     eppendorf_control_positivo = eppendorf_rack.wells()[0] # A1 del tuberack; esquina superior izquierda
     eppendorf_control_negativo = eppendorf_rack.wells()[3] # D1 del tuberack; esquina inferior izquierda
     
     
-    # INSTRUMENTS:
+    # Import INSTRUMENTS:
     m20 = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks = tipracks)
     s20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks = tipracks)
     
@@ -118,7 +117,7 @@ def run(protocol):
     m20.well_bottom_clearance.dispense = 0.6
     
     
-    # Calculo cuantas columnas completas contiene mi sample_plate: una lista con las columnas completas del sample_plate
+    # Calculo cuantas columnas completas contienen mis sample_plate (s): una lista con las columnas completas del sample_plate
     s_plates_cmplt_cols = [] 
     for number, s_plate in zip(sample_number, sample_plates):
         # Lista con las columnas completas del sample_plate
@@ -148,14 +147,14 @@ def run(protocol):
     #print("\no_plates_cmplt_cols_rep2 : ", o_plates_cmplt_cols_rep2)        
     
     
-    # Creo una lista que contendrá las columnas del tiprack que van a traspasar las columnas completas del sample_plate a las output_plates
+    # Creo una lista que contendrá las columnas del tiprack que van a servir para traspasar las columnas completas del sample_plate a las output_plates
     tips_cmplt_cols = []
     for rack, numero in zip(tipracks, sample_number):
         tips_cmplt_cols.append(rack.rows()[0][:divmod(numero, 8)[0]])
     #print("\ntips_cmplt_cols : ", tips_cmplt_cols)
     
     
-    # Instrucciones de paso de muestras:
+    # Traspasamos las muestras del sample_plate al outputplate usando las tips. Esto se hace tomando la columna X de las tips y traspasando el contenido de la columna X del sample_plate a la columna X del (de los) output_plate (s). Eso se hace usando la función zip(). 
     template_volume = 1
     for sample_sublist, output1_sublist, output2_sublist, tip_sublist in zip(s_plates_cmplt_cols, o_plates_cmplt_cols_rep1, o_plates_cmplt_cols_rep2, tips_cmplt_cols):
         for sample_col, output1_col, output2_col, tip_col in zip(sample_sublist, output1_sublist, output2_sublist, tip_sublist):
@@ -229,8 +228,8 @@ def run(protocol):
     
     
     
-    # OJO: LA PIPETA USA UNA CANTIDAD DE CORRIENTE PARA HACER EL PICK_UP. 
-    # SI QUEREMOS HACER UN PICK_UP DE MENOS DE 8 TIPS, DEBEMOS DECIRLE QUE USE MENOS CORRIENTE. 
+    # OJO: LA PIPETA USA UNA CANTIDAD DE CORRIENTE PARA HACER EL PICK_UP, QUE ES DEPENDE DE LA CANTIAD DE PUNTAS QUE SE VAN A TOMAR. 
+    # SI QUEREMOS HACER UN PICK_UP DE MENOS DE 8 TIPS, DEBEMOS DECIRLE QUE USE MENOS CORRIENTE, PARA QUE LA FUERZA APLICADA SOBRE EL TIPRACK SEA LA APROPIADA. 
     # PARA ESO DECLARAMOS EL SIGUIENTE VALOR:
     per_tip_pickup_current = .075 # 0.075 es lo que usa la p20 para cada tip tomado, mientras que la p300 usa 0.1 por tip.
     
