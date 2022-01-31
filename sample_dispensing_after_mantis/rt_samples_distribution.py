@@ -5,7 +5,7 @@ import json
 metadata = {
     'protocolName': 'RT sample distribution',
     'author': 'Multiplex <bvalderrama@multiplex.bio>',
-    'description': 'RTs samples distribution this script can handle up to 3 extraction plates',
+    'description': 'RTs samples distribution. This script can handle up to 3 extraction plates and has to be used after dispensing the mastermix with Mantis',
     'source': 'Made by multiplex',
     'apiLevel': '2.11'
     }
@@ -36,11 +36,9 @@ def run(protocol):
     
     
     
-    # LABWARE DEFINITION:
+    # LABWARE DEFINITIONS:
     
-    print("\nsample_number : ", sample_number)
-    
-    # RNA plates (96 well plates)
+    # Import RNA plates (96 well plates)
     samples_slots = ['4', '5', '6'][:len(sample_number)]
     
     if custom_sample_plate == 'yes':
@@ -51,7 +49,7 @@ def run(protocol):
     
     
     
-    # Output plates
+    # Import Output plates
     output_slots = ['1', '2', '3'][:len(sample_number)]
     
     if custom_output_plate == 'yes':
@@ -61,11 +59,11 @@ def run(protocol):
         
         
         
-    # Tips
+    # Import Tips
     tip_slots = ['7', '8', '9'][:len(sample_number)]
-    #print("\ntip_slots : ", tip_slots)
+    
     if custom_tipracks == 'yes':
-        # Las custom tipracks para p20 no están implementadas aún.
+        # OJO: Las custom tipracks para p20 no están implementadas aún. Es probable que no sea necesario crear el labware_definition hasta en un buen tiempo.
         tipracks = [protocol.load_labware('vertex_96_tiprack_20ul', slot, 'tiprack') for slot in tip_slots]
     else:
         tipracks = [protocol.load_labware('opentrons_96_tiprack_20ul', slot, 'tiprack') for slot in tip_slots]
@@ -73,9 +71,10 @@ def run(protocol):
     
     
     
-    # Eppendorf tube rack
+    # Import Eppendorf tube rack
     eppendorf_rack = protocol.load_labware('opentrons_24_tuberack_nest_1.5ml_snapcap', 11, 'eppendorf rack')
     
+    # Defining specific wells within the Eppendorf tube rack
     eppendorf_control_positivo = eppendorf_rack.wells()[0] # A1
     eppendorf_control_negativo = eppendorf_rack.wells()[-1] # D6
     
@@ -83,7 +82,7 @@ def run(protocol):
     
     
     
-    # INSTRUMENTS:
+    # Loading INSTRUMENTS:
     m20 = protocol.load_instrument('p20_multi_gen2', 'right', tip_racks = tipracks)
     s20 = protocol.load_instrument('p20_single_gen2', 'left', tip_racks = tipracks)
     
@@ -91,7 +90,7 @@ def run(protocol):
     
     
     
-    # NUMERO DE COLUMNAS COMPLETAS Y NUMERO DE POCILLOS CON MUESTRAS EN LA COLUMNA QUE QUEDA INCOMPLETA
+    # DEFINIMOS EL NUMERO DE COLUMNAS COMPLETAS Y, DENTRO DE LA COLUMNA QUE QUEDA INCOMPLETA, CALCULAMOS LA CANTIDAD DE POCILLOS CON MUESTRAS
     
     # Por 'num_cols_completas' sabemos el número de columnas completas que hay en cada placa.
     num_cols_completas = [divmod(number, 8)[0] for number in sample_number]
@@ -108,7 +107,7 @@ def run(protocol):
     
     # PREPARACIÓN DE LISTAS:
     
-    #LISTA1: La 'list_of_complete_columns_through_sample_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras
+    #LISTA1: La 'list_of_complete_columns_through_sample_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras en cada una de las plates que tienen samples
     list_of_complete_columns_through_sample_plates = []
     
     for num, plate in zip(num_cols_completas, sample_plates):
@@ -118,7 +117,7 @@ def run(protocol):
     
     
     
-    #LISTA2: La 'list_of_complete_columns_through_output_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras
+    #LISTA2: La 'list_of_complete_columns_through_output_plates' es una lista. Cada elemento es, a su vez, una lista con todas las columnas que están completas de muestras en cada una de las plates que tendrán el output
     list_of_complete_columns_through_output_plates = []
     
     for num, plate in zip(num_cols_completas, output_plates):
@@ -126,8 +125,7 @@ def run(protocol):
                 list_of_complete_columns_through_output_plates.append(col)
 
         
-        
-        
+    
 
     #LISTA3: La 'lista_de_tips' es una lista de listas. Cada elemento es, a su vez, una lista con todas las columnas con puntas de cada rack
     lista_de_tips = []
@@ -204,12 +202,14 @@ def run(protocol):
     m20.well_bottom_clearance.aspirate = 0.6
     m20.well_bottom_clearance.dispense = 0.6
     
+    
+    # Definimos la cantiad de corriente (y potencia mecánica) que usará el robot para tomar las puntas necesarias. La cantidad de fuerza es proporcional a la cantidad de tips que se van a tomar, por lo que este es un paso crítico.
     per_tip_pickup_current = .075 # 0.075 para p20 y 0.1 para p300
     
     for sample_col, output_col, num_incomplete_wells, tips in zip(list_of_incomplete_columns_through_sample_plates, list_of_incomplete_columns_through_output_plates, num_pocillos_col_incompleta, special_pick_up_tip_list):
         
         if num_incomplete_wells != 0 and tips != None : # Si la columna está incompleta, entonces:
-            # Definimos la cantidad de corriente que se va a usar para el pick up dependiendo de la cantidad de tips que se necesitan tomar
+            # Definimos la cantidad de corriente que se va a usar para el pick up (dependiendo de la cantidad de tips que se necesitan tomar)
             pick_up_current = num_incomplete_wells*per_tip_pickup_current
             
             protocol._implementation._hw_manager.hardware._attached_instruments[
